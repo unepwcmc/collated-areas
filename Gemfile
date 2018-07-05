@@ -61,6 +61,7 @@ group :development do
   gem 'capistrano-nvm'
 end
 
+gem 'will_paginate'
 
 gem 'dotenv-rails'
 

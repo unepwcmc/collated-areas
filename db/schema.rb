@@ -10,100 +10,59 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180213103331) do
+ActiveRecord::Schema.define(version: 20180627090634) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "categories", force: :cascade do |t|
-    t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "countries", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
+    t.string "iso3", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "donors", force: :cascade do |t|
-    t.string "name"
+  create_table "evaluations", force: :cascade do |t|
+    t.bigint "site_id"
+    t.integer "metadata_id", null: false
+    t.string "url", null: false
+    t.integer "year", null: false
+    t.string "methodology", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "source_id"
+    t.index ["site_id"], name: "index_evaluations_on_site_id"
+    t.index ["source_id"], name: "index_evaluations_on_source_id"
   end
 
-  create_table "ecosystems", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "ocean_regions", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "project_categories", force: :cascade do |t|
-    t.bigint "project_id"
-    t.bigint "category_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["category_id"], name: "index_project_categories_on_category_id"
-    t.index ["project_id"], name: "index_project_categories_on_project_id"
-  end
-
-  create_table "project_countries", force: :cascade do |t|
-    t.bigint "project_id"
+  create_table "site_countries", force: :cascade do |t|
+    t.bigint "site_id"
     t.bigint "country_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["country_id"], name: "index_project_countries_on_country_id"
-    t.index ["project_id"], name: "index_project_countries_on_project_id"
+    t.index ["country_id"], name: "index_site_countries_on_country_id"
+    t.index ["site_id"], name: "index_site_countries_on_site_id"
   end
 
-  create_table "project_donors", force: :cascade do |t|
-    t.bigint "project_id"
-    t.bigint "donor_id"
+  create_table "sites", force: :cascade do |t|
+    t.integer "wdpa_id", null: false
+    t.string "name", null: false
+    t.string "designation", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["donor_id"], name: "index_project_donors_on_donor_id"
-    t.index ["project_id"], name: "index_project_donors_on_project_id"
   end
 
-  create_table "project_ecosystems", force: :cascade do |t|
-    t.bigint "project_id"
-    t.bigint "ecosystem_id"
+  create_table "sources", force: :cascade do |t|
+    t.string "data_title"
+    t.string "resp_party"
+    t.integer "year"
+    t.string "language"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["ecosystem_id"], name: "index_project_ecosystems_on_ecosystem_id"
-    t.index ["project_id"], name: "index_project_ecosystems_on_project_id"
   end
 
-  create_table "project_ocean_regions", force: :cascade do |t|
-    t.bigint "project_id"
-    t.bigint "ocean_region_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["ocean_region_id"], name: "index_project_ocean_regions_on_ocean_region_id"
-    t.index ["project_id"], name: "index_project_ocean_regions_on_project_id"
-  end
-
-  create_table "projects", force: :cascade do |t|
-    t.text "title"
-    t.string "status", null: false
-    t.integer "start_date", null: false
-    t.integer "end_date", null: false
-    t.string "beneficiaries"
-    t.string "implementing_agency"
-    t.string "total_project_cost"
-    t.string "co_funding_entities"
-    t.text "further_information"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "primary_funding"
-    t.string "weblink", default: ""
-  end
-
+  add_foreign_key "evaluations", "sites"
+  add_foreign_key "evaluations", "sources"
+  add_foreign_key "site_countries", "countries"
+  add_foreign_key "site_countries", "sites"
 end

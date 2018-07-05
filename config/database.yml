@@ -6,7 +6,7 @@
 development:
   adapter: postgresql
   encoding: utf-8
-  database: collated_coral_development
+  database: collated_areas_development
   pool: 5
   username: postgres
   password:
@@ -14,7 +14,7 @@ development:
 test:
   adapter: postgresql
   encoding: utf-8
-  database: collated_coral_test
+  database: collated_areas_test
   pool: 5
   username: postgres
   password:

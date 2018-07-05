@@ -1,16 +1,9 @@
 class HomeController < ApplicationController
   def index
 
-    @filters = Project.filters_to_json
-    @projects = Project.projects_to_json
+    @filters = Evaluation.filters_to_json
+    @sources = Evaluation.sources_to_json
+    @evaluations = Evaluation.evaluations_to_json params[:page] || 1
 
   end
-
-  def download
-    send_data Project.to_csv(params[:ids]&.split(",")), {
-              type: "text/csv; charset=iso-8859-1; header=present",
-              disposition: "attachment",
-              filename: "collated-coral-#{Date.today}.csv" }
-  end
-
 end
