@@ -3,6 +3,38 @@ class Evaluation < ApplicationRecord
   belongs_to :source
   validates :metadata_id, :url, :year, :methodology, presence: true
 
+  TABLE_ATTRIBUTES = [
+    {
+      title: 'WDPAID',
+      field: 'wdpa_id'
+    },
+    {
+      title: 'AssessmentID',
+      field: 'id'
+    },
+    {
+      title: 'ISO3/Country',
+      field: 'iso3'
+    },
+    {
+      title: 'Methodology',
+      field: 'methodology'
+    },
+    {
+      title: 'Year of assessment',
+      field: 'year'
+    },
+    {
+      title: 'LinkToAssessment',
+      field: 'url'
+    },
+    {
+      title: 'MetadataID',
+      field: 'metadata_id'
+    }
+  ]
+
+
   def self.evaluations_to_json page
     evaluations = Evaluation.paginate(page: page, per_page: 100).order('id ASC')
     evaluations.to_a.map! do |evaluation|

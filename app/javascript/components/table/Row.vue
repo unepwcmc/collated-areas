@@ -1,19 +1,12 @@
 <template>
   <tr @click="openModal()" v-show="item.isActive">
-    <!--
+    <td>{{ item.wdpa_id }}</td>
     <td>{{ item.id }}</td>
-    <td :title="item.title">{{ projectTitle }}</td>
-    <td>{{ checkForMultiples('donors') }}</td>
-    <td>{{ checkForMultiples('categories') }}</td>
-    <td>{{ checkForMultiples('ecosystem') }}</td>
-    <td>{{ checkForMultiples('country') }}</td>
-    <td>{{ checkForMultiples('ocean_based_region') }}</td>
-    <td>{{ item.total_project_cost }}</td>
-    <td>{{ item.co_funding_entities }}</td>
-    -->
-    <td>{{ item.methodology }}</td>
     <td>{{ checkForMultiples('iso3') }}</td>
+    <td>{{ item.methodology }}</td>
     <td>{{ item.year }}</td>
+    <td>{{ item.url }}</td>
+    <td>{{ item.metadata_id }}</td>
   </tr>
 </template>
 

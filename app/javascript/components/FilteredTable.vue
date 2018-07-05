@@ -3,7 +3,7 @@
     <filters :filters="filters"></filters>
 
     <table class="table table--head">
-      <table-head :filters="filters"></table-head>
+      <table-head :filters="attributes"></table-head>
     </table>
 
     <table class="table table--body">
@@ -36,6 +36,7 @@
 
     props: {
       filters: { type: Array },
+      attributes: { type: Array },
       projects: { type: Array }
     },
 
@@ -109,7 +110,7 @@
           let filterMatch = true
 
           this.$store.state.selectedFilterOptions.forEach(filter => {
-            
+
             // if there are some selected options check to see if one matches
             if (filter.options.length !== 0) {
               let optionMatch = false
@@ -199,7 +200,7 @@
         // order the items using the correct property
         return (a, b) => {
           let result = (a[filter] < b[filter]) ? -1 : (a[filter] > b[filter]) ? 1 : 0;
-          
+
           return result * this.sortDirection;
         }
       }

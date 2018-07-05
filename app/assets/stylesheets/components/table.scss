@@ -52,11 +52,11 @@
 //**************************************************
 // columns
 //**************************************************
-  
+
   // fix the columns widths so that they don't change
-  // size when you use the pagination 
+  // size when you use the pagination
   th,td {
-    &:first-child { width: 58px; }
+    &:first-child { width: 98px; }
     &:nth-child(2) { width: 150px; }
     &:nth-child(3) { width: 146px; }
     &:nth-child(4) { width: 148px; }
