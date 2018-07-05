@@ -11,19 +11,16 @@ class Evaluation < ApplicationRecord
         per_page: evaluations.per_page,
         total_entries: evaluations.total_entries,
         total_pages: evaluations.total_pages,
-        items:
-          {
-            id: evaluation.id,
-            wdpa_id: evaluation.site.wdpa_id,
-            iso3: evaluation.site.countries.pluck(:iso3).sort,
-            methodology: evaluation.methodology,
-            year: evaluation.year,
-            url: evaluation.url,
-            metadata_id: evaluation.metadata_id,
-            source_id: evaluation.source.id,
-            name: evaluation.site.name,
-            designation: evaluation.site.designation
-          }
+        id: evaluation.id,
+        wdpa_id: evaluation.site.wdpa_id,
+        iso3: evaluation.site.countries.pluck(:iso3).sort,
+        methodology: evaluation.methodology,
+        year: evaluation.year.to_s,
+        url: evaluation.url,
+        metadata_id: evaluation.metadata_id,
+        source_id: evaluation.source.id,
+        title: evaluation.site.name,
+        designation: evaluation.site.designation
       }
     end.to_json
   end
@@ -44,9 +41,9 @@ class Evaluation < ApplicationRecord
   def self.filters_to_json
     unique_methodologies = Evaluation.pluck(:methodology).uniq.sort
     unique_iso3 = Country.pluck(:iso3).uniq.sort
-    unique_year = Evaluation.pluck(:year).uniq.sort
+    unique_year = Evaluation.pluck(:year).uniq.map(&:to_s).sort
 
-    filters = [
+    [
       {
         name: 'methodology',
         title: 'Methodology',
