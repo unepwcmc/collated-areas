@@ -1,27 +1,18 @@
-# Collated Coral
+# protectedplanet-pame
 
-See Wiki for more detailed information.
+Please clone the project using git and then run the usual commands:
+```
+rails db:create
+rails db:migrate
+```
 
-## Tech
 
-- Ruby
-- Rails 5.1.4
-- Vue
-- Vuex
+To import the data please run this command:
+```
+rake import:sites['lib/data/seed/PAME_Data-2018-06-27.csv']
+```
 
-## Local development
-
-- Clone repo
-- `bundle install`
-- `yarn install`
-- `rails s`
-
-## Importing data
-
-- Import projects rake task
-- `rake import:projects['lib/data/seed/CoralFunders_Data_13.02.18_v2.csv']`
-- Destroy all previous records and repopulate the database
-- `rake import:repopulate['lib/data/seed/CoralFunders_Data_13.02.18_v2.csv']`
-- Check logs to see any errors
-- Some database problems can be solved using:
-- `bundle exec rake db:drop db:create db:migrate`
+Finally please run:
+```
+rails s
+```
