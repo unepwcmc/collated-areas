@@ -34,9 +34,15 @@ class Evaluation < ApplicationRecord
     }
   ]
 
+  SORTING = ['']
 
-  def self.evaluations_to_json page
-    evaluations = Evaluation.paginate(page: page, per_page: 100).order('id ASC')
+  def self.paginate_evaluations(page, order=nil)
+    order = (order && ['ASC', 'DESC'].include?(order.upcase)) ? order : 'DESC'
+    evaluations = Evaluation.paginate(page: page || 1, per_page: 100).order('id ASC')
+    serialise(evaluations)
+  end
+
+  def self.serialise(evaluations)
     evaluations.to_a.map! do |evaluation|
       {
         current_page: evaluations.current_page,
@@ -54,7 +60,7 @@ class Evaluation < ApplicationRecord
         title: evaluation.site.name,
         designation: evaluation.site.designation
       }
-    end.to_json
+    end
   end
 
   def self.sources_to_json
