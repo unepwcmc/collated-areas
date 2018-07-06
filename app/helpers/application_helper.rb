@@ -1,10 +1,10 @@
 module ApplicationHelper
   def page_title 
-    'Coral Reef Funding Landscape'
+    'Global Database on Protected Area Management Effectiveness'
   end
 
   def page_description
-    'Coral Reef Funding Landscape is a filterable database of international funding allocations for the sustainable management of coral reefs and related mangroves and seagrass ecosystems'
+    'The Global Database on Protected Area Management Effectiveness (GD-PAME) is the most comprehensive global database of protected area management effectiveness (PAME) evaluations. It indicates if a protected area in the World Database on Protected Areas (WDPA) has been assessed. it is compiled in collaboration with a wide range of governmental and non-governmental organizations and updated on a monthly basis'
   end
 
   def url_encode (text)
@@ -16,7 +16,7 @@ module ApplicationHelper
   end
 
   def social_image
-    image_url('coral-reef-funding-landscape-social.jpg')
+    image_url('social.jpg')
   end
 
   def social_image_alt
@@ -41,7 +41,7 @@ module ApplicationHelper
 
   def create_social_twitter_link
     title = url_encode('Share ' + page_title + ' on Twitter')
-    text = url_encode('Coral Reef Funding Landscape - Explore international funding allocations for the sustainable management of coral reefs and related mangroves and seagrass ecosystems.')
+    text = url_encode(page_title + ' - The most comprehensive global database of protected area management effectiveness (PAME) evaluations')
     url = encoded_page_url
     href = 'https://twitter.com/intent/tweet/?text=' + text + '&url=' + url
     
@@ -51,8 +51,8 @@ module ApplicationHelper
   def create_social_email_link
     title = url_encode('Share ' + page_title + ' via Email')
     url = encoded_page_url
-    subject = url_encode('Coral Reef Funding Landscape')
-    body = url_encode("Coral Reef Funding Landscape\n\nSearch the database to explore international funding allocations for the sustainable management of coral reefs and related mangroves and seagrass ecosystems.\n\n") + url
+    subject = url_encode(page_title)
+    body = url_encode(page_title + "\n\nSearch the database of the most comprehensive global database of protected area management effectiveness (PAME) evaluations. It indicates if a protected area in the World Database on Protected Areas (WDPA) has been assessed. it is compiled in collaboration with a wide range of governmental and non-governmental organizations and updated on a monthly basis\n\n") + url
     href = 'mailto:?subject=' + subject + '&body=' + body
 
     link_to '', href, title: title, class: 'social--share social--email', target: '_self'
