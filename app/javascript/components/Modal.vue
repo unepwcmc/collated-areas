@@ -4,7 +4,7 @@
       <div class="modal__content">
         <button class="modal__close fa fa-times button button--primary" @click="closeModal()"></button>
 
-        <h2>Evaluation Details</h2>
+        <h2>Source details</h2>
 
         <template v-if="hasContent(modalContent.metadata_id)">
           <p><strong>MetadataID:</strong> {{ modalContent.metadata_id }}</p>
@@ -19,7 +19,7 @@
         </template>
 
         <template v-if="hasContent(modalContent.year)">
-          <p><strong>Year:</strong> {{ modalContent.source_year }}</p>
+          <p><strong>Year of submission:</strong> {{ modalContent.source_year }}</p>
         </template>
 
         <template v-if="hasContent(modalContent.language)">
