@@ -58,7 +58,11 @@ class Evaluation < ApplicationRecord
         metadata_id: evaluation.metadata_id,
         source_id: evaluation.source.id,
         title: evaluation.site.name,
-        designation: evaluation.site.designation
+        designation: evaluation.site.designation,
+        data_title: evaluation.source.data_title,
+        resp_party: evaluation.source.resp_party,
+        language: evaluation.source.language,
+        source_year: evaluation.source.year
       }
     end
   end
