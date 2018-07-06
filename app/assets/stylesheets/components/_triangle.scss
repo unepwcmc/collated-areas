@@ -1,0 +1,30 @@
+//**************************************************
+// transparent triangle
+//**************************************************
+$transparentTriangleHeight: 60px;
+
+%transparentTriangle {
+  background-color: white;
+  content: '';
+  width: 50vw; height: 50vw;
+
+  display: inline-block;
+}
+
+.triangle--transparent {
+  overflow: hidden;
+  width: 100%; height: $transparentTriangleHeight;
+
+  &:before {
+    @extend %transparentTriangle;
+
+    transform: translateY($transparentTriangleHeight) rotateZ(28deg);
+    transform-origin: top right;
+  }
+  &:after {
+    @extend %transparentTriangle;
+
+    transform: translateY($transparentTriangleHeight) rotateZ(-28deg);
+    transform-origin: top left;
+  }
+}

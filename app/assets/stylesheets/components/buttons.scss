@@ -11,7 +11,7 @@
 // reusable styles
 //**************************************************
 %button--pagination {
-  @extend .button--blue;
+  @extend .button--primary;
   background-position: center;
   background-repeat: no-repeat;
   width: rem-calc(45); height: rem-calc(45);
@@ -30,11 +30,11 @@
   padding: rem-calc(12 17);
   text-decoration: none;
   
-  &--blue { @include button-background($blue); }
-  &--green { @include button-background($green); }
+  &--secondary { @include button-background($secondary); }
+  &--primary { @include button-background($primary); }
 
   &--download {
-    background: $green image-url('icons/download.svg') no-repeat rem-calc(21) center;
+    background: $primary image-url('icons/download.svg') no-repeat rem-calc(21) center;
     color: white;
     padding-right: rem-calc(21);
     padding-left: rem-calc(52);
@@ -69,5 +69,5 @@
     &:hover { text-decoration: underline; }
   }
 
-  &--link--green { color: $green; }
+  &--link--secondary { color: $secondary; }
 }

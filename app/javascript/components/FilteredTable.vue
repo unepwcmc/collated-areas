@@ -15,8 +15,6 @@
       </tbody>
     </table>
 
-    <p class="table__note">*All currency values in US Dollars</p>
-
     <pagination :items-per-page="config.itemsPerPage"></pagination>
   </div>
 </template>
