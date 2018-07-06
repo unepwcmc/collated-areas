@@ -1,13 +1,18 @@
 set :stage, :staging
-set :branch, "develop"
+set :branch, "master"
 
 
 server "web-staging.linode.unep-wcmc.org", user: 'wcmc', roles: %w{app web db}
 
-set :application, "collatedcoral"
-set :server_name, "collatedcoral"
+set :application, "protectedplanet-pame"
+set :server_name, "protectedplanet-pame"
 set :sudo_user, "wcmc"
 set :app_port, "80"
+
+
+
+
+
 
 # server-based syntax
 # ======================

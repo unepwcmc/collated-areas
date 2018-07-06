@@ -1,13 +1,12 @@
-lock '3.8.2'
+lock '3.11.0'
 
-set :application, 'collatedcoral'
-set :repo_url, 'git@github.com:unepwcmc/collated-coral.git'
+set :application, 'protectedplanet-pame'
+set :repo_url, 'git@github.com:unepwcmc/collated-areas.git'
 
 
 set :nvm_type, :user # or :system, depends on your nvm setup
 set :nvm_node, 'v9.0.0'
 set :nvm_map_bins, %w{node npm yarn}
-
 
 
 # Default branch is :master
