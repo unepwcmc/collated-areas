@@ -4,7 +4,7 @@
       <input 
         type="submit" 
         value="CSV" 
-        title="Download CSV file of filtered Coral projects" 
+        title="Download CSV file of filtered protected area management effectiveness evaluations" 
         class="button button--download button--green filter__download"
         :class="{ 'button--disabled' : !hasResults }"
         v-bind="{ 'disabled' : !hasResults }">

@@ -20,7 +20,7 @@ module ApplicationHelper
   end
 
   def social_image_alt
-    'Coral reef'
+    'Forest'
   end
 
   def create_social_facebook_link
