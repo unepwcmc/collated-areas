@@ -19,7 +19,7 @@ table {
   width: 100%;
 
   thead {
-    background-color: $blue-dark;
+    background-color: $grey;
     border-bottom: solid $grey-light rem-calc(1);
     color: white;
 
@@ -31,9 +31,9 @@ table {
       background-color: $grey-light;
       cursor: pointer;
 
-      &:nth-child(even){ background-color: $blue-light; }
+      &:nth-child(even){ background-color: $primary-light; }
 
-      &:hover { background-color: $grey; }
+      &:hover { background-color: $primary; }
     }
   }
 
