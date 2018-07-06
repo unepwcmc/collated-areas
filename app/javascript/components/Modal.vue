@@ -15,15 +15,15 @@
         </template>
 
         <template v-if="hasContent(modalContent.resp_party)">
-          <p><strong>Responsible party:</strong> USD {{ modalContent.resp_party }}</p>
+          <p><strong>Responsible party:</strong> {{ modalContent.resp_party }}</p>
         </template>
 
         <template v-if="hasContent(modalContent.year)">
-          <p><strong>Year:</strong> USD {{ modalContent.source_year }}</p>
+          <p><strong>Year:</strong> {{ modalContent.source_year }}</p>
         </template>
 
         <template v-if="hasContent(modalContent.language)">
-          <p><strong>Language:</strong> USD {{ modalContent.language }}</p>
+          <p><strong>Language:</strong> {{ modalContent.language }}</p>
         </template>
       </div>
     </div>

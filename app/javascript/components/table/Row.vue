@@ -6,7 +6,7 @@
     <td>{{ item.methodology }}</td>
     <td>{{ item.year }}</td>
     <td>{{ item.url }}</td>
-    <td @click="openModal()">{{ item.metadata_id }}</td>
+    <td>{{ item.metadata_id }}</td>
   </tr>
 </template>
 
