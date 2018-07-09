@@ -52,6 +52,7 @@
     created () {
       this.createSelectedFilterOptions()
       this.items = this.projects
+      this.$store.commit('updateTotalItemsOnCurrentPage', this.items.length)
       this.$store.commit('updateTotalItems', this.items.length)
     },
 

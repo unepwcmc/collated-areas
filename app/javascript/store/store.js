@@ -12,6 +12,7 @@ export default new Vuex.Store({
     totalItems: [], // contains project objects
     activeItems: [], // contains indices of articles which match the filters
     currentPage: 1,
+    totalItemsOnCurrentPage: 0,
     selectedFilterOptions: [], // an array containing an object for each filter that has an array of selected options
     modalContent: {},
     sortDirection: ''
@@ -32,6 +33,10 @@ export default new Vuex.Store({
     
     updateCurrentPage (state, currentPage) {
       this.state.currentPage = currentPage
+    },
+
+    updateTotalItemsOnCurrentPage (state, total) {
+      this.state.totalItemsOnCurrentPage = total
     },
 
     setFilterOptions (state, options) {
