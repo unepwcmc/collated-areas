@@ -74,40 +74,38 @@ class Evaluation < ApplicationRecord
 
     csv_string = CSV.generate do |csv_line|
 
-    evaluation_columns = Evaluation.new.attributes.keys
-    evaluation_columns << "evaluation_id"
+      evaluation_columns = Evaluation.new.attributes.keys
+      evaluation_columns << "evaluation_id"
 
-    excluded_attributes = ["created_at", "updated_at", "id", "site_id", "source_id"]
+      excluded_attributes = ["created_at", "updated_at", "id", "site_id", "source_id"]
 
-    evaluation_columns.delete_if { |k, v| excluded_attributes.include? k }
+      evaluation_columns.delete_if { |k, v| excluded_attributes.include? k }
 
-    additional_columns = ["wpda_id", "iso3", "name", "designation", "source_data_title", "source_resp_party", "source_year", "source_language"]
-    evaluation_columns << additional_columns.map{ |e| "#{e}" }
+      additional_columns = ["wpda_id", "iso3", "name", "designation", "source_data_title", "source_resp_party", "source_year", "source_language"]
+      evaluation_columns << additional_columns.map{ |e| "#{e}" }
 
-    csv_line << evaluation_columns.flatten
+      csv_line << evaluation_columns.flatten
 
-    evaluations = Evaluation.where(id: ids).order(id: :asc)
+      evaluations = Evaluation.where(id: ids).order(id: :asc)
 
-    evaluations.to_a.each do |evaluation|
-      evaluation_attributes = evaluation.attributes
-      evaluation_attributes.delete_if { |k, v| excluded_attributes.include? k }
+      evaluations.to_a.each do |evaluation|
+        evaluation_attributes = evaluation.attributes
+        evaluation_attributes.delete_if { |k, v| excluded_attributes.include? k }
 
-      evaluation_attributes["evaluation_id"] = evaluation.id
-      evaluation_attributes["wdpa_id"] = evaluation.site.wdpa_id
-      evaluation_attributes["iso3"] = evaluation.site.countries.pluck(:iso3).uniq.join(',').to_s
-      evaluation_attributes["name"] = evaluation.site.name
-      evaluation_attributes["designation"] = evaluation.site.designation
-      evaluation_attributes["source_data_title"] = evaluation.source.data_title
-      evaluation_attributes["source_resp_party"] = evaluation.source.resp_party
-      evaluation_attributes["source_year"] = evaluation.source.year
-      evaluation_attributes["source_language"] = evaluation.source.language
+        evaluation_attributes["evaluation_id"] = evaluation.id
+        evaluation_attributes["wdpa_id"] = evaluation.site.wdpa_id
+        evaluation_attributes["iso3"] = evaluation.site.countries.pluck(:iso3).uniq.join(',').to_s
+        evaluation_attributes["name"] = evaluation.site.name
+        evaluation_attributes["designation"] = evaluation.site.designation
+        evaluation_attributes["source_data_title"] = evaluation.source.data_title
+        evaluation_attributes["source_resp_party"] = evaluation.source.resp_party
+        evaluation_attributes["source_year"] = evaluation.source.year
+        evaluation_attributes["source_language"] = evaluation.source.language
 
-      evaluation_attributes = evaluation_attributes.values.map{ |e| "#{e}" }
-      csv_line << evaluation_attributes
+        evaluation_attributes = evaluation_attributes.values.map{ |e| "#{e}" }
+        csv_line << evaluation_attributes
+      end
     end
-  end
-
-  csv_string
-
+    csv_string
   end
 end
