@@ -20,6 +20,7 @@
 </template>
 
 <script>
+  import axios from 'axios'
   import { eventHub } from '../home.js'
   import Filters from './filters/Filters.vue'
   import TableHead from './table/TableHead.vue'
@@ -50,8 +51,6 @@
 
     created () {
       // this.createSelectedFilterOptions()
-      console.log(this.items)
-
       this.currentPage = this.json.current_page
       this.itemsPerPage = this.json.per_page
       this.totalItems = this.json.total_entries
@@ -62,7 +61,8 @@
     },
 
     mounted () {
-      eventHub.$on('getNewItems')
+      eventHub.$on('getNewItems', this.getNewItems)
+
 
 
 
@@ -110,10 +110,34 @@
     },
 
     methods: {
-      getNewItems (newPage) {
+      getNewItems () {
         //axios
-        console.log(this.store.state.requestedPage)
-        console.log(this.store.state.selectedFilters) 
+        console.log(this.$store.state.requestedPage)
+        console.log(this.$store.state.selectedFilterOptions) 
+
+        let data = {
+          requested_page: this.$store.state.requestedPage,
+          filters: this.$store.state.selectedFilterOptions
+        }
+
+        // const instance = axios.create({
+        //   baseURL: 'https://some-domain.com/api/',
+        //   timeout: 1000,
+        //   headers: {'X-Custom-Header': 'foobar'}
+        // })
+
+        const csrf = document.querySelectorAll('meta[name="csrf-token"]')[0].getAttribute('content')
+        axios.defaults.headers.common['X-CSRF-Token'] = csrf
+        axios.defaults.headers.common['Accept'] = 'application/json'
+
+        axios.post('/home', data)
+        .then(function (response) {
+          console.log(response)
+          // update front end with new data
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
       }
 
       // filterItems () {

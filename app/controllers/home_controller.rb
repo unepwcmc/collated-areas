@@ -5,6 +5,8 @@ class HomeController < ApplicationController
     @sources = Evaluation.sources_to_json
     @evaluations = Evaluation.paginate_evaluations(params[:page]).to_json
 
+
+    # Andrew please delete this temp json when the real one is set up
     @json = {
       current_page: 1,
       per_page: 100,
