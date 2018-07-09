@@ -67,4 +67,52 @@ class Evaluation < ApplicationRecord
       }
     ].to_json
   end
+
+  def self.to_csv(ids = [])
+
+    csv = ''
+
+    evaluation_columns = Evaluation.new.attributes.keys
+    evaluation_columns << "evaluation_id"
+
+    excluded_attributes = ["created_at", "updated_at", "id", "site_id", "source_id"]
+
+    evaluation_columns.delete_if { |k, v| excluded_attributes.include? k }
+
+    evaluation_columns << "wpda_id"
+    evaluation_columns << "iso3"
+    evaluation_columns << "name"
+    evaluation_columns << "designation"
+    evaluation_columns << "source_data_title"
+    evaluation_columns << "source_resp_party"
+    evaluation_columns << "source_year"
+    evaluation_columns << "source_language"
+
+    csv << evaluation_columns.join(',')
+    csv << "\r\n"
+
+    evaluations = Evaluation.where(id: ids).order(id: :asc)
+
+    evaluations.to_a.each do |evaluation|
+      evaluation_attributes = evaluation.attributes
+      evaluation_attributes.delete_if { |k, v| excluded_attributes.include? k }
+
+      evaluation_attributes["evaluation_id"] = evaluation.id
+      evaluation_attributes["wdpa_id"] = evaluation.site.wdpa_id
+      evaluation_attributes["iso3"] = evaluation.site.countries.pluck(:iso3).uniq.join(',').to_s
+      evaluation_attributes["name"] = evaluation.site.name
+      evaluation_attributes["designation"] = evaluation.site.designation
+      evaluation_attributes["source_data_title"] = evaluation.source.data_title
+      evaluation_attributes["source_resp_party"] = evaluation.source.resp_party
+      evaluation_attributes["source_year"] = evaluation.source.year
+      evaluation_attributes["source_language"] = evaluation.source.language
+
+      evaluation_attributes = evaluation_attributes.values.map{ |e| "\"#{e}\"" }
+      csv << evaluation_attributes.join(',').to_s
+      csv << "\r\n"
+    end
+
+  csv
+
+  end
 end
