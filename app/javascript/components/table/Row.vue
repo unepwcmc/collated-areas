@@ -1,5 +1,5 @@
 <template>
-  <tr @click="openModal()" v-show="item.isActive">
+  <tr @click="openModal()">
     <td>{{ item.wdpa_id }}</td>
     <td>{{ item.id }}</td>
     <td>{{ checkForMultiples('iso3') }}</td>

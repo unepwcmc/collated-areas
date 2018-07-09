@@ -9,7 +9,7 @@
       :type="filter.type">
     </data-filter>
 
-    <download-csv class="inline-block"></download-csv>
+    <!-- <download-csv class="inline-block"></download-csv> -->
   </div>
 </template>
 

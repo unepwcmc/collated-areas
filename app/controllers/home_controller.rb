@@ -4,6 +4,14 @@ class HomeController < ApplicationController
     @filters = Evaluation.filters_to_json
     @sources = Evaluation.sources_to_json
     @evaluations = Evaluation.paginate_evaluations(params[:page]).to_json
+
+    @json = {
+      current_page: 1,
+      per_page: 100,
+      total_entries: Evaluation.count,
+      total_pages: (Evaluation.count / 10).round,
+      items: Evaluation.paginate_evaluations(1)
+    }.to_json
   end
 
   def list

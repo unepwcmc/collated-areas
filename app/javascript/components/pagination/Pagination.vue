@@ -116,7 +116,8 @@
         if (isActive) {
           const newPage = direction == 'next' ? this.currentPage + 1 : this.currentPage - 1
           
-          eventHub.$emit('getNewItems', newPage)
+          this.$store.commit('updateRequestedPage', newPage)
+          eventHub.$emit('getNewItems')
 
           // this.updateButtons()
         }

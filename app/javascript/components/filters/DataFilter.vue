@@ -132,7 +132,7 @@
 
         this.$store.commit('updateFilterOptions', newFilterOptions)
 
-        eventHub.$emit('filtersChanged')
+        eventHub.$emit('getNewItems')
       }
     }
   }

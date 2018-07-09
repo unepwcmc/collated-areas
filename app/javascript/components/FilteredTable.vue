@@ -15,14 +15,13 @@
       </tbody>
     </table>
 
-    <pagination :current-page="currentPage" :items-per-page="itemsPerPage" :total-items="totalItems"></pagination>
+    <pagination :current-page="currentPage" :items-per-page="itemsPerPage" :total-items="totalItems" :total-pages="totalPages"></pagination>
   </div>
 </template>
 
 <script>
   import { eventHub } from '../home.js'
   import Filters from './filters/Filters.vue'
-  import SelectedFilter from './filters/SelectedFilter.vue'
   import TableHead from './table/TableHead.vue'
   import Row from './table/Row.vue'
   import Pagination from './pagination/Pagination.vue'
@@ -30,17 +29,17 @@
   export default {
     name: 'filtered-table',
 
-    components: { SelectedFilter, Filters, TableHead, Row, Pagination },
+    components: { Filters, TableHead, Row, Pagination },
 
     props: {
       filters: { type: Array },
       attributes: { type: Array },
-      json: { type: Array }
+      json: { type: Object }
     },
 
     data () {
       return {
-        currentPage: 0
+        currentPage: 0,
         itemsPerPage: 10,
         totalItems: 0,
         totalPages: 0,
@@ -51,6 +50,7 @@
 
     created () {
       // this.createSelectedFilterOptions()
+      console.log(this.items)
 
       this.currentPage = this.json.current_page
       this.itemsPerPage = this.json.per_page
@@ -62,7 +62,7 @@
     },
 
     mounted () {
-      eventHub.on('getNewItems', this.getNewItems)
+      eventHub.$on('getNewItems')
 
 
 
@@ -112,6 +112,8 @@
     methods: {
       getNewItems (newPage) {
         //axios
+        console.log(this.store.state.requestedPage)
+        console.log(this.store.state.selectedFilters) 
       }
 
       // filterItems () {
@@ -216,6 +218,6 @@
       //     return result * this.sortDirection;
         // }
       // }
-    // }
+    }
   }
 </script>
