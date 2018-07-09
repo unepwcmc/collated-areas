@@ -1,3 +1,5 @@
+require 'csv'
+
 class Evaluation < ApplicationRecord
   belongs_to :site
   belongs_to :source
@@ -79,17 +81,10 @@ class Evaluation < ApplicationRecord
 
     evaluation_columns.delete_if { |k, v| excluded_attributes.include? k }
 
-    evaluation_columns << "wpda_id"
-    evaluation_columns << "iso3"
-    evaluation_columns << "name"
-    evaluation_columns << "designation"
-    evaluation_columns << "source_data_title"
-    evaluation_columns << "source_resp_party"
-    evaluation_columns << "source_year"
-    evaluation_columns << "source_language"
+    additional_columns = ["wpda_id", "iso3", "name", "designation", "source_data_title", "source_resp_party", "source_year", "source_language"]
+    evaluation_columns << additional_columns
 
     csv << evaluation_columns.join(',')
-    csv << "\r\n"
 
     evaluations = Evaluation.where(id: ids).order(id: :asc)
 
@@ -109,10 +104,9 @@ class Evaluation < ApplicationRecord
 
       evaluation_attributes = evaluation_attributes.values.map{ |e| "\"#{e}\"" }
       csv << evaluation_attributes.join(',').to_s
-      csv << "\r\n"
     end
 
-  csv
+  csv.to_csv
 
   end
 end
