@@ -2,50 +2,28 @@
   <div class="modal-wrapper" :class="{ 'modal--active' : isActive }" @click.self="closeModal()">
     <div id="modal" :style="styleObject" class="modal">
       <div class="modal__content">
-        <button class="modal__close fa fa-times button button--blue" @click="closeModal()"></button>
+        <button class="modal__close fa fa-times button button--primary" @click="closeModal()"></button>
 
-        <h2>Project Details</h2>
+        <h2>Source details</h2>
 
-        <p><strong>ID:</strong> {{ modalContent.id }}</p>
-        <p><strong>Project Title:</strong> {{ modalContent.title }}</p>
-        <p><strong>Donor:</strong> {{ printMultiple('donors') }}</p>
-        <p><strong>Status:</strong> {{ modalContent.status }}</p>
-        <p><strong>Start Date:</strong> {{ modalContent.start_date }}</p>
-        <p><strong>End Date:</strong> {{ modalContent.end_date }}</p>
-        <p><strong>Country:</strong> {{ printMultiple('country') }}</p>
-        <p><strong>Ocean Based Region:</strong> {{ printMultiple('ocean_based_region') }}</p>
-        <p><strong>Ecosystem:</strong> {{ printMultiple('ecosystem') }}</p>
-
-        <template v-if="hasContent(modalContent.beneficiaries)">
-          <p><strong>Beneficiaries:</strong> {{ modalContent.beneficiaries }}</p>
+        <template v-if="hasContent(modalContent.metadata_id)">
+          <p><strong>MetadataID:</strong> {{ modalContent.metadata_id }}</p>
         </template>
 
-        <template v-if="hasContent(modalContent.implementing_agency)">
-          <p><strong>Implementing Agency:</strong> {{ modalContent.implementing_agency }}</p>
+        <template v-if="hasContent(modalContent.data_title)">
+          <p><strong>Data title:</strong> {{ modalContent.data_title }}</p>
         </template>
 
-        <template v-if="hasContent(modalContent.total_project_cost)">
-          <p><strong>Total Project Cost:</strong> USD {{ modalContent.total_project_cost }}</p>
+        <template v-if="hasContent(modalContent.resp_party)">
+          <p><strong>Responsible party:</strong> {{ modalContent.resp_party }}</p>
         </template>
 
-        <template v-if="hasContent(modalContent.primary_funding)">
-          <p><strong>Primary Funding:</strong> USD {{ modalContent.primary_funding }}</p>
+        <template v-if="hasContent(modalContent.year)">
+          <p><strong>Year of submission:</strong> {{ modalContent.source_year }}</p>
         </template>
 
-        <template v-if="hasContent(modalContent.co_funding_entities)">
-          <p><strong>Co-funding:</strong> USD {{ modalContent.co_funding_entities }}</p>
-        </template>
-
-        <template v-if="hasContent(modalContent.categories)">
-          <p><strong>Category:</strong> {{ printMultiple('categories') }}</p>
-        </template>
-
-        <template v-if="hasContent(modalContent.further_information)">
-          <p><strong>Further Information:</strong> {{ modalContent.further_information }}</p>
-        </template>
-
-        <template v-if="hasContent(modalContent.weblink)">
-          <p><strong>Web link:</strong> <a :href="modalContent.weblink" target="_blank" :title="'Visit ' + modalContent.weblink">Link</a></p>
+        <template v-if="hasContent(modalContent.language)">
+          <p><strong>Language:</strong> {{ modalContent.language }}</p>
         </template>
       </div>
     </div>
