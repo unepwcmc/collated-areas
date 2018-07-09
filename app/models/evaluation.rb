@@ -72,7 +72,7 @@ class Evaluation < ApplicationRecord
 
   def self.to_csv(ids = [])
 
-    csv = ''
+    csv_string = CSV.generate do |csv_line|
 
     evaluation_columns = Evaluation.new.attributes.keys
     evaluation_columns << "evaluation_id"
@@ -82,9 +82,9 @@ class Evaluation < ApplicationRecord
     evaluation_columns.delete_if { |k, v| excluded_attributes.include? k }
 
     additional_columns = ["wpda_id", "iso3", "name", "designation", "source_data_title", "source_resp_party", "source_year", "source_language"]
-    evaluation_columns << additional_columns
+    evaluation_columns << additional_columns.map{ |e| "#{e}" }
 
-    csv << evaluation_columns.join(',')
+    csv_line << evaluation_columns.flatten
 
     evaluations = Evaluation.where(id: ids).order(id: :asc)
 
@@ -102,11 +102,12 @@ class Evaluation < ApplicationRecord
       evaluation_attributes["source_year"] = evaluation.source.year
       evaluation_attributes["source_language"] = evaluation.source.language
 
-      evaluation_attributes = evaluation_attributes.values.map{ |e| "\"#{e}\"" }
-      csv << evaluation_attributes.join(',').to_s
+      evaluation_attributes = evaluation_attributes.values.map{ |e| "#{e}" }
+      csv_line << evaluation_attributes
     end
+  end
 
-  csv.to_csv
+  csv_string
 
   end
 end
