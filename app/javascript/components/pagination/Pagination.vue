@@ -19,7 +19,7 @@
     </div>
 
     <div v-else class="left">
-      <p>There are no projects matching the selected filters options.</p>
+      <p>There are no evaluations matching the selected filters options.</p>
     </div>
   </div>
 </template>
@@ -31,8 +31,22 @@
     name: "pagination",
 
     props: {
-      itemsPerPage: Number,
-      totalItems: Number
+      currentPage: {
+        required: true,
+        type: Number
+      },
+      itemsPerPage: {
+        required: true,
+        type: Number
+      },
+      totalItems: {
+        required: true,
+        type: Number
+      },
+      totalPages: {
+        required: true,
+        type: Number
+      }
     },
 
     data () {
@@ -45,7 +59,7 @@
     mounted () {
       this.updateButtons()
 
-      eventHub.$on('activeItemsChanged', this.updateButtons)
+      // eventHub.$on('activeItemsChanged', this.updateButtons)
     },
 
     computed: {
@@ -75,13 +89,13 @@
         return lastItem
       },
 
-      currentPage () {
-        return this.$store.state.currentPage
-      },
+      // currentPage () {
+      //   // return this.$store.state.currentPage
+      // },
 
-      totalPages () {
-        return Math.ceil(this.totalItems / this.itemsPerPage)
-      },
+      // totalPages () {
+      //   return Math.ceil(this.totalItems / this.itemsPerPage)
+      // },
 
       haveResults () {
         return this.totalItems > 0
@@ -90,11 +104,11 @@
 
     methods: {
       updateButtons () {
-        this.totalItems = this.$store.state.totalItems
+        // this.totalItems = this.$store.state.totalItems
         this.nextIsActive = this.currentPage < this.totalPages
         this.previousIsActive = this.currentPage > 1
 
-        eventHub.$emit('pageChanged')
+        // eventHub.$emit('pageChanged')
       },
 
       changePage (isActive, direction) {
@@ -102,8 +116,9 @@
         if (isActive) {
           const newPage = direction == 'next' ? this.currentPage + 1 : this.currentPage - 1
           
-          this.$store.commit('updateCurrentPage', newPage)
-          this.updateButtons()
+          eventHub.$emit('getNewItems', newPage)
+
+          // this.updateButtons()
         }
       }
     }

@@ -15,7 +15,7 @@
       </tbody>
     </table>
 
-    <pagination :items-per-page="itemsPerPage"></pagination>
+    <pagination :current-page="currentPage" :items-per-page="itemsPerPage" :total-items="totalItems"></pagination>
   </div>
 </template>
 
@@ -62,17 +62,21 @@
     },
 
     mounted () {
+      eventHub.on('getNewItems', this.getNewItems)
+
+
+
       // refilter the items when the filters are changed
-      eventHub.$on('filtersChanged', this.filterItems)
+      // eventHub.$on('filtersChanged', this.filterItems)
 
       // repaginate the items when the previous/next buttons are clicked
-      eventHub.$on('pageChanged', this.paginateItems)
+      // eventHub.$on('pageChanged', this.paginateItems)
 
       // sort the active items when a sort button is clicked
-      eventHub.$on('sort', this.sortActiveItems)
+      // eventHub.$on('sort', this.sortActiveItems)
 
       // only display the items that match the page number
-      this.filterItems()
+      // this.filterItems()
     },
 
     computed: {
@@ -106,6 +110,10 @@
     },
 
     methods: {
+      getNewItems (newPage) {
+        //axios
+      }
+
       // filterItems () {
       //   this.$store.commit('clearActiveItems')
 
