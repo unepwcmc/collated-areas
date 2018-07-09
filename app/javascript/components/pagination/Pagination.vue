@@ -31,12 +31,12 @@
     name: "pagination",
 
     props: {
-      itemsPerPage: Number
+      itemsPerPage: Number,
+      totalItems: Number
     },
 
     data () {
       return {
-        totalItems: this.$store.state.totalItems,
         previousIsActive: false,
         nextIsActive: false
       }
