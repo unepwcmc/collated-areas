@@ -47,7 +47,7 @@ class Evaluation < ApplicationRecord
       current_page: page,
       per_page: 100,
       total_entries: items.total_entries,
-      total_pages: (items.total_entries / 10).round,
+      total_pages: items.total_pages,
       items: items
     }
   end
