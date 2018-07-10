@@ -65,8 +65,6 @@
           }
         })
 
-        console.log(array)
-
         this.$store.commit('setFilterOptions', array)
       },
     }

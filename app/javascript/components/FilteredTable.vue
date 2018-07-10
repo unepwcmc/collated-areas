@@ -51,11 +51,13 @@
 
     created () {
       // this.createSelectedFilterOptions()
-      this.currentPage = this.json.current_page
-      this.itemsPerPage = this.json.per_page
-      this.totalItems = this.json.total_entries
-      this.totalPages = this.json.total_pages
-      this.items = this.json.items
+      // this.currentPage = this.json.current_page
+      // this.itemsPerPage = this.json.per_page
+      // this.totalItems = this.json.total_entries
+      // this.totalPages = this.json.total_pages
+      // this.items = this.json.items
+
+      this.updateProperties(this.json)
 
       // this.$store.commit('updateTotalItems', this.items.length)
     },
@@ -110,6 +112,15 @@
     },
 
     methods: {
+      updateProperties (data) {
+        console.log('update data')
+        this.currentPage = data.current_page
+        this.itemsPerPage = data.per_page
+        this.totalItems = data.total_entries
+        this.totalPages = data.total_pages
+        this.items = data.items
+      },
+
       getNewItems () {
         //axios
         console.log(this.$store.state.requestedPage)
@@ -131,9 +142,13 @@
         axios.defaults.headers.common['Accept'] = 'application/json'
 
         axios.post('/list', data)
-        .then(function (response) {
-          console.log(response)
+        .then(response => {
+          console.log('new data', response.data)
+
           // update front end with new data
+
+          this.updateProperties(response.data)
+
         })
         .catch(function (error) {
           console.log(error)
