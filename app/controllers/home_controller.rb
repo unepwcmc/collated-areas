@@ -1,16 +1,4 @@
 class HomeController < ApplicationController
-  EXAMPLE_PARAMS =
-  {
-    requested_page: 1,
-    filters: [
-      {
-        name: "year",
-        options: [2008, 2009],
-        type: 'multiple'
-      }
-    ]
-  }.to_json
-
   DEFAULT_PARAMS =
   {
     requested_page: 1,
