@@ -9,7 +9,7 @@ Vue.use(Vuex)
 // create store
 export default new Vuex.Store({
   state: {
-    requestedPage: 0,
+    requestedPage: 1,
     selectedFilterOptions: [], // an array containing an object for each filter that has an array of selected options
     modalContent: {},
     sortDirection: ''

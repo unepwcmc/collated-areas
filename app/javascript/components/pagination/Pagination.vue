@@ -49,20 +49,15 @@
       }
     },
 
-    data () {
-      return {
-        previousIsActive: false,
-        nextIsActive: false
-      }
-    },
-
-    mounted () {
-      this.updateButtons()
-
-      // eventHub.$on('activeItemsChanged', this.updateButtons)
-    },
-
     computed: {
+      nextIsActive () {
+        return  this.currentPage < this.totalPages
+      },
+
+      previousIsActive () {
+        return this.currentPage > 1
+      },
+
       firstItem () {
         let first
 
@@ -92,14 +87,11 @@
       haveResults () {
         return this.totalItems > 0
       }
+
+
     },
 
     methods: {
-      updateButtons () {
-        this.nextIsActive = this.currentPage < this.totalPages
-        this.previousIsActive = this.currentPage > 1
-      },
-
       changePage (isActive, direction) {
         // only change the page if the button is active
         if (isActive) {

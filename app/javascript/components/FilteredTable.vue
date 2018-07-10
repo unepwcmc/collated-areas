@@ -40,7 +40,7 @@
 
     data () {
       return {
-        currentPage: 0,
+        currentPage: 1,
         itemsPerPage: 10,
         totalItems: 0,
         totalPages: 0,
