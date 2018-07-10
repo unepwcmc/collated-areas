@@ -9,9 +9,6 @@ Vue.use(Vuex)
 // create store
 export default new Vuex.Store({
   state: {
-    // totalItems: [], // contains project objects
-    // activeItems: [], // contains indices of articles which match the filters
-    // currentPage: 1,
     requestedPage: 0,
     selectedFilterOptions: [], // an array containing an object for each filter that has an array of selected options
     modalContent: {},
@@ -19,22 +16,6 @@ export default new Vuex.Store({
   },
 
   mutations: {
-    // updateTotalItems (state, total) {
-    //   this.state.totalItems = total 
-    // },
-
-    // updateActiveItems (state, item) {
-    //   this.state.activeItems.push(item)
-    // },
-
-    // clearActiveItems () {
-    //   this.state.activeItems = []
-    // },
-    
-    // updateCurrentPage (state, currentPage) {
-    //   this.state.currentPage = currentPage
-    // },
-
     updateRequestedPage (state, page) {
       this.state.requestedPage = page
     },
@@ -61,7 +42,6 @@ export default new Vuex.Store({
     },
 
     removeFilterOption (state, removeOption) {
-
       this.state.selectedFilterOptions.forEach(filter => {
         if(filter.name == removeOption.name){ 
           filter.options.forEach(option => {

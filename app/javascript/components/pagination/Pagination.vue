@@ -89,14 +89,6 @@
         return lastItem
       },
 
-      // currentPage () {
-      //   // return this.$store.state.currentPage
-      // },
-
-      // totalPages () {
-      //   return Math.ceil(this.totalItems / this.itemsPerPage)
-      // },
-
       haveResults () {
         return this.totalItems > 0
       }
@@ -104,11 +96,8 @@
 
     methods: {
       updateButtons () {
-        // this.totalItems = this.$store.state.totalItems
         this.nextIsActive = this.currentPage < this.totalPages
         this.previousIsActive = this.currentPage > 1
-
-        // eventHub.$emit('pageChanged')
       },
 
       changePage (isActive, direction) {
@@ -118,8 +107,6 @@
           
           this.$store.commit('updateRequestedPage', newPage)
           eventHub.$emit('getNewItems')
-
-          // this.updateButtons()
         }
       }
     }

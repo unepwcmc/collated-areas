@@ -50,70 +50,15 @@
     },
 
     created () {
-      // this.createSelectedFilterOptions()
-      // this.currentPage = this.json.current_page
-      // this.itemsPerPage = this.json.per_page
-      // this.totalItems = this.json.total_entries
-      // this.totalPages = this.json.total_pages
-      // this.items = this.json.items
-
       this.updateProperties(this.json)
-
-      // this.$store.commit('updateTotalItems', this.items.length)
     },
 
     mounted () {
       eventHub.$on('getNewItems', this.getNewItems)
-
-
-
-
-      // refilter the items when the filters are changed
-      // eventHub.$on('filtersChanged', this.filterItems)
-
-      // repaginate the items when the previous/next buttons are clicked
-      // eventHub.$on('pageChanged', this.paginateItems)
-
-      // sort the active items when a sort button is clicked
-      // eventHub.$on('sort', this.sortActiveItems)
-
-      // only display the items that match the page number
-      // this.filterItems()
-    },
-
-    computed: {
-      // selectedFilterOptions () {
-      //   // return selected filter options in an appropriate format to loop over
-      //   let options = []
-
-      //   this.$store.state.selectedFilterOptions.forEach(filter => {
-      //     if (filter.options.length !== 0) {
-      //       filter.options.forEach(selectedOption => {
-      //         let obj = {}
-
-      //         obj.name = filter.name
-      //         obj.option = selectedOption
-
-      //         options.push(obj)
-      //       })
-      //     }
-      //   })
-
-      //   return options
-      // },
-
-      // hasSelected () {
-      //   return this.selectedFilterOptions.length > 0
-      // },
-
-      // totalResults () {
-      //   return this.$store.state.totalItems
-      // }
     },
 
     methods: {
       updateProperties (data) {
-        console.log('update data')
         this.currentPage = data.current_page
         this.itemsPerPage = data.per_page
         this.totalItems = data.total_entries
@@ -124,7 +69,6 @@
       getNewItems () {
         //axios
         console.log(this.$store.state.requestedPage)
-        console.log(this.$store.state.selectedFilterOptions)
 
         let data = {
           requested_page: this.$store.state.requestedPage,
@@ -143,120 +87,12 @@
 
         axios.post('/list', data)
         .then(response => {
-          console.log('new data', response.data)
-
-          // update front end with new data
-
           this.updateProperties(response.data)
-
         })
         .catch(function (error) {
           console.log(error)
         })
       }
-
-      // filterItems () {
-      //   this.$store.commit('clearActiveItems')
-
-      //   // an item must match one option from each filter (if any have been selected)
-      //   this.items.forEach(item => {
-      //     let filterMatch = true
-
-      //     this.$store.state.selectedFilterOptions.forEach(filter => {
-
-      //       // if there are some selected options check to see if one matches
-      //       if (filter.options.length !== 0) {
-      //         let optionMatch = false
-
-      //         // if the filter is of type multiple you need to loop through an array
-      //         // otherwise you are matching to a string
-      //         if(filter.type === 'multiple') {
-      //           const arrayOfValues = item[filter.name]
-
-      //           arrayOfValues.forEach(value => {
-      //             filter.options.forEach(option => {
-      //               if (value == option) optionMatch = true
-      //             })
-      //           })
-      //         } else {
-      //           filter.options.forEach(option => {
-      //             if (item[filter.name] == option) optionMatch = true
-      //           })
-      //         }
-
-      //         // once filterMatch is set to false it will always be false and the item
-      //         // will not be shown because it did match an option in one of the filters
-      //         filterMatch = filterMatch && optionMatch
-      //       }
-      //     })
-
-      //     // only push the item id into the active items array if there are no fails
-      //     if (filterMatch) {
-      //       this.$store.commit('updateActiveItems', item.id)
-      //     }
-      //   })
-
-      //   this.paginateItems()
-      //   this.$store.commit('updateCurrentPage', 1)
-      //   this.$store.commit('updateTotalItems', this.$store.state.activeItems.length)
-      //   eventHub.$emit('activeItemsChanged');
-      // },
-
-      // only display the items that match the page number
-      // paginateItems () {
-      //   const pageStart = (this.$store.state.currentPage - 1) * this.config.itemsPerPage
-      //   const pageEnd =  pageStart + this.config.itemsPerPage;
-
-      //   this.itemsOnCurrentPage = this.$store.state.activeItems.slice(pageStart, pageEnd)
-
-      //   // loop through all articles and update the active state
-      //   this.items.forEach(item => {
-
-      //     const isActive = this.itemsOnCurrentPage.indexOf(item.id) >= 0
-
-      //     this.$set(item, 'isActive', isActive)
-      //   })
-      // },
-
-      // createSelectedFilterOptions () {
-      //   let array = []
-
-      //   // create an empty array for each filter
-      //   this.filters.forEach(filter => {
-      //     if (filter.name !== undefined && filter.options.length > 0) {
-      //       let obj = {}
-
-      //       obj.name = filter.name
-      //       obj.options = []
-      //       obj.type = filter.type
-
-      //       array.push(obj)
-      //     }
-      //   })
-
-      //   this.$store.commit('setFilterOptions', array)
-      // },
-
-      // sortActiveItems (filter) {
-      //   // sort the items using the main array the contains all data
-      //   this.items.sort(this.compare(filter))
-
-      //   // trigger filtering function so that the active items array is updated with
-      //   // the new order and the results are paginated correctly
-      //   this.filterItems()
-      // },
-
-      // compare (filter) {
-      //   // use a negative to alternate the direction of the order
-      //   this.sortDirection = this.sortDirection * -1
-
-      //   // order the items using the correct property
-      //   return (a, b) => {
-      //     let result = (a[filter] < b[filter]) ? -1 : (a[filter] > b[filter]) ? 1 : 0;
-
-      //     return result * this.sortDirection;
-        // }
-      // }
     }
   }
 </script>
