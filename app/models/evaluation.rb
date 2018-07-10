@@ -36,10 +36,56 @@ class Evaluation < ApplicationRecord
 
   SORTING = ['']
 
-  def self.paginate_evaluations(page, order=nil)
+  def self.paginate_evaluations(json=nil, order=nil)
+    json_params = JSON.parse(json) unless json.nil?
+    page = json_params.present? ? json_params["requested_page"].to_i : 1
+    page = page == 0 ? 1 : page
     order = (order && ['ASC', 'DESC'].include?(order.upcase)) ? order : 'DESC'
-    evaluations = Evaluation.paginate(page: page || 1, per_page: 100).order('id ASC')
+    evaluations = generate_query(page, json_params["filters"]) if json_params.present?
     serialise(evaluations)
+  end
+
+  def self.generate_query(page, filter_params)
+    # if params are empty then return the paginated results without filtering
+    return Evaluation.order('id ASC').paginate(page: page || 1, per_page: 100) if filter_params.empty?
+
+    site_ids = []
+    where_params = {}
+    where_params[:methodology] = ""
+    where_params[:year] = ""
+    filters = filter_params.select { |hash| hash["options"].present? }
+    filters.each do |filter|
+      options = filter["options"]
+      case filter['name']
+      when 'iso3'
+        countries = options
+        site_ids << countries.map{ |iso3| Country.find_by(iso3: iso3).sites.pluck(:id) }
+        where_params[:sites] = "site_id IN (#{site_ids.join(',')})"
+      when 'methodology'
+        options = options.map{ |e| "'#{e}'" }
+        where_params[:methodology] = "#{filter["name"]} IN (#{options.join(',')})"
+      when 'year'
+        where_params[:year] = "#{filter["name"]} IN (#{options.join(',')})"
+      end
+    end
+
+    run_query(page, where_params)
+  end
+
+  def self.run_query(page, where_params)
+    if where_params[:sites].present?
+      Evaluation
+      .joins(:site)
+      .where(where_params[:sites])
+      .where(where_params[:methodology])
+      .where(where_params[:year])
+      .paginate(page: page || 1, per_page: 100).order('id ASC')
+     else
+       Evaluation
+       .where(where_params[:methodology])
+       .where(where_params[:year])
+       .paginate(page: page || 1, per_page: 100).order('id ASC')
+     end
   end
 
   def self.serialise(evaluations)

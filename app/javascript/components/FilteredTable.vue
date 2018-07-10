@@ -113,7 +113,7 @@
       getNewItems () {
         //axios
         console.log(this.$store.state.requestedPage)
-        console.log(this.$store.state.selectedFilterOptions) 
+        console.log(this.$store.state.selectedFilterOptions)
 
         let data = {
           requested_page: this.$store.state.requestedPage,
@@ -130,7 +130,7 @@
         axios.defaults.headers.common['X-CSRF-Token'] = csrf
         axios.defaults.headers.common['Accept'] = 'application/json'
 
-        axios.post('/home', data)
+        axios.post('/list', data)
         .then(function (response) {
           console.log(response)
           // update front end with new data
