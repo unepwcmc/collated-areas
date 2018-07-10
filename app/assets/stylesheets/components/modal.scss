@@ -47,4 +47,15 @@
       top: rem-calc(-18);
       right: rem-calc(-16);
     }
+
+//*************************************************
+// modal trigger
+//*************************************************
+  &__trigger {
+    color: $primary;
+    font-weight: bold;
+    text-decoration: underline;
+
+    &:hover { text-decoration: none; }
+  }
 }
