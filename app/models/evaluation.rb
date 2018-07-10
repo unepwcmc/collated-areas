@@ -42,12 +42,13 @@ class Evaluation < ApplicationRecord
     page = page == 0 ? 1 : page
     order = (order && ['ASC', 'DESC'].include?(order.upcase)) ? order : 'DESC'
     evaluations = generate_query(page, json_params["filters"]) if json_params.present?
+    items = serialise(evaluations)
     {
       current_page: page,
       per_page: 100,
-      total_entries: Evaluation.count,
-      total_pages: (Evaluation.count / 10).round,
-      items: serialise(evaluations)
+      total_entries: items.count,
+      total_pages: (items.count / 10).round,
+      items: items
     }
   end
 
