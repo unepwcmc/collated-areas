@@ -41,7 +41,7 @@
     data () {
       return {
         currentPage: 1,
-        itemsPerPage: 10,
+        itemsPerPage: 0,
         totalItems: 0,
         totalPages: 0,
         items: [],
@@ -75,12 +75,6 @@
           filters: this.$store.state.selectedFilterOptions
         }
 
-        // const instance = axios.create({
-        //   baseURL: 'https://some-domain.com/api/',
-        //   timeout: 1000,
-        //   headers: {'X-Custom-Header': 'foobar'}
-        // })
-
         const csrf = document.querySelectorAll('meta[name="csrf-token"]')[0].getAttribute('content')
         axios.defaults.headers.common['X-CSRF-Token'] = csrf
         axios.defaults.headers.common['Accept'] = 'application/json'
@@ -88,6 +82,8 @@
         axios.post('/list', data)
         .then(response => {
           this.updateProperties(response.data)
+
+          console.log(response.data)
         })
         .catch(function (error) {
           console.log(error)
