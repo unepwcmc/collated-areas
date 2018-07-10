@@ -29,7 +29,6 @@ table {
   tbody {
     tr { 
       background-color: $grey-light;
-      cursor: pointer;
 
       &:nth-child(even){ background-color: $primary-light; }
     }

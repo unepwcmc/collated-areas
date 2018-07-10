@@ -5,7 +5,7 @@
     <td>{{ checkForMultiples('iso3') }}</td>
     <td>{{ item.methodology }}</td>
     <td>{{ item.year }}</td>
-    <td>{{ item.url }}</td>
+    <td v-html="assessmentUrl(item.url)"></td>
     <td @click="openModal()" class="modal__trigger">{{ item.metadata_id }}</td>
     <td>{{ item.name }}</td>
     <td>{{ item.designation }}</td>
@@ -33,6 +33,16 @@
     methods: {
       wdpaUrl (wdpaId) {
         return 'https://protectedplanet.net/' + wdpaId
+      },
+
+      assessmentUrl (url) {
+        let link = ''
+
+        if(url.includes('http')) {
+          link = `<a href="${url}" title="View assessment" target="_blank">Link</a>`
+        }
+
+        return link
       },
 
       openModal () {
