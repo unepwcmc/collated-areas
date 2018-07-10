@@ -52,8 +52,8 @@
 // modal trigger
 //*************************************************
   &__trigger {
-    color: darken($primary, 10%);
-    font-weight: normal;
+    color: $primary;
+    font-weight: bold;
     text-decoration: underline;
 
     &:hover { text-decoration: none; }

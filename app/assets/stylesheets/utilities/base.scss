@@ -64,7 +64,12 @@ strong {
   font-weight: $bold;
 }
 
-a { color: $blue; }
+a { 
+  color: $primary;
+  text-decoration: underline;
+
+  &:hover { text-decoration: none; }
+}
 
 //*************************************************
 // site structure

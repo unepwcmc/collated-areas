@@ -1,6 +1,6 @@
 <template>
   <tr v-show="item.isActive">
-    <td>{{ item.wdpa_id }}</td>
+    <td><a :href="wdpaUrl(item.wdpa_id)" title="View protected area on Protected Planet" target="_blank">{{ item.wdpa_id }}</a></td>
     <td>{{ item.id }}</td>
     <td>{{ checkForMultiples('iso3') }}</td>
     <td>{{ item.methodology }}</td>
@@ -31,6 +31,10 @@
     },
 
     methods: {
+      wdpaUrl (wdpaId) {
+        return 'https://protectedplanet.net/' + wdpaId
+      },
+
       openModal () {
         this.$store.commit('updateModalContent', this.item)
 
