@@ -67,9 +67,6 @@
       },
 
       getNewItems () {
-        //axios
-        console.log(this.$store.state.requestedPage)
-
         let data = {
           requested_page: this.$store.state.requestedPage,
           filters: this.$store.state.selectedFilterOptions
