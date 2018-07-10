@@ -29,11 +29,8 @@ table {
   tbody {
     tr { 
       background-color: $grey-light;
-      cursor: pointer;
 
       &:nth-child(even){ background-color: $primary-light; }
-
-      &:hover { background-color: $primary; }
     }
   }
 
@@ -66,7 +63,12 @@ strong {
   font-weight: $bold;
 }
 
-a { color: $blue; }
+a { 
+  color: $primary;
+  text-decoration: underline;
+
+  &:hover { text-decoration: none; }
+}
 
 //*************************************************
 // site structure

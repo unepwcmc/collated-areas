@@ -1,12 +1,14 @@
 <template>
-  <tr @click="openModal()" v-show="item.isActive">
-    <td>{{ item.wdpa_id }}</td>
+  <tr v-show="item.isActive">
+    <td><a :href="wdpaUrl(item.wdpa_id)" title="View protected area on Protected Planet" target="_blank">{{ item.wdpa_id }}</a></td>
     <td>{{ item.id }}</td>
     <td>{{ checkForMultiples('iso3') }}</td>
     <td>{{ item.methodology }}</td>
     <td>{{ item.year }}</td>
-    <td>{{ item.url }}</td>
-    <td>{{ item.metadata_id }}</td>
+    <td v-html="assessmentUrl(item.url)"></td>
+    <td @click="openModal()" class="modal__trigger">{{ item.metadata_id }}</td>
+    <td>{{ item.name }}</td>
+    <td>{{ item.designation }}</td>
   </tr>
 </template>
 
@@ -29,6 +31,20 @@
     },
 
     methods: {
+      wdpaUrl (wdpaId) {
+        return 'https://protectedplanet.net/' + wdpaId
+      },
+
+      assessmentUrl (url) {
+        let link = ''
+
+        if(url.includes('http')) {
+          link = `<a href="${url}" title="View assessment" target="_blank">Link</a>`
+        }
+
+        return link
+      },
+
       openModal () {
         this.$store.commit('updateModalContent', this.item)
 
