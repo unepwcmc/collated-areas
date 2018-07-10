@@ -32,8 +32,6 @@ table {
       cursor: pointer;
 
       &:nth-child(even){ background-color: $primary-light; }
-
-      &:hover { background-color: $primary; }
     }
   }
 

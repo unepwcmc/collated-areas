@@ -7,11 +7,11 @@ class Evaluation < ApplicationRecord
 
   TABLE_ATTRIBUTES = [
     {
-      title: 'WDPAID',
+      title: 'WDPA ID',
       field: 'wdpa_id'
     },
     {
-      title: 'AssessmentID',
+      title: 'Assessment ID',
       field: 'id'
     },
     {
@@ -27,12 +27,20 @@ class Evaluation < ApplicationRecord
       field: 'year'
     },
     {
-      title: 'LinkToAssessment',
+      title: 'Link To Assessment',
       field: 'url'
     },
     {
-      title: 'MetadataID',
+      title: 'Metadata ID',
       field: 'metadata_id'
+    },
+    {
+      title: 'Name',
+      field: 'name'
+    },
+    {
+      title: 'Designation',
+      field: 'designation'
     }
   ]
 
@@ -53,7 +61,7 @@ class Evaluation < ApplicationRecord
         url: evaluation.url,
         metadata_id: evaluation.metadata_id,
         source_id: evaluation.source.id,
-        title: evaluation.site.name,
+        name: evaluation.site.name,
         designation: evaluation.site.designation,
         data_title: evaluation.source.data_title,
         resp_party: evaluation.source.resp_party,

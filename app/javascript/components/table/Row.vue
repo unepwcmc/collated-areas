@@ -1,12 +1,14 @@
 <template>
-  <tr @click="openModal()" v-show="item.isActive">
+  <tr v-show="item.isActive">
     <td>{{ item.wdpa_id }}</td>
     <td>{{ item.id }}</td>
     <td>{{ checkForMultiples('iso3') }}</td>
     <td>{{ item.methodology }}</td>
     <td>{{ item.year }}</td>
     <td>{{ item.url }}</td>
-    <td>{{ item.metadata_id }}</td>
+    <td @click="openModal()" class="modal__trigger">{{ item.metadata_id }}</td>
+    <td>{{ item.name }}</td>
+    <td>{{ item.designation }}</td>
   </tr>
 </template>
 
