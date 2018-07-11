@@ -53,6 +53,10 @@ class Evaluation < ApplicationRecord
     order = (order && ['ASC', 'DESC'].include?(order.upcase)) ? order : 'DESC'
     evaluations = generate_query(page, json_params["filters"]) if json_params.present?
     items = serialise(evaluations)
+    structure_data(page, items)
+  end
+
+  def self.structure_data(page, items)
     {
       current_page: page,
       per_page: 100,
@@ -66,11 +70,17 @@ class Evaluation < ApplicationRecord
     # if params are empty then return the paginated results without filtering
     return Evaluation.order('id ASC').paginate(page: page || 1, per_page: 100) if filter_params.empty?
 
+    filters = filter_params.select { |hash| hash["options"].present? }
+
+    where_params = parse_filters(filters)
+    run_query(page, where_params)
+  end
+
+  def self.parse_filters(filters)
     site_ids = []
     where_params = {}
     where_params[:methodology] = ""
     where_params[:year] = ""
-    filters = filter_params.select { |hash| hash["options"].present? }
     filters.each do |filter|
       options = filter["options"]
       case filter['name']
@@ -85,8 +95,7 @@ class Evaluation < ApplicationRecord
         where_params[:year] = "#{filter["name"]} IN (#{options.join(',')})"
       end
     end
-
-    run_query(page, where_params)
+    where_params
   end
 
   def self.run_query(page, where_params)
