@@ -1,5 +1,5 @@
 <template>
-  <tr v-show="item.isActive">
+<tr>
     <td><a :href="wdpaUrl(item.wdpa_id)" title="View protected area on Protected Planet" target="_blank">{{ item.wdpa_id }}</a></td>
     <td>{{ item.id }}</td>
     <td>{{ checkForMultiples('iso3') }}</td>
