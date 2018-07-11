@@ -47,11 +47,11 @@ class Evaluation < ApplicationRecord
   SORTING = ['']
 
   def self.paginate_evaluations(json=nil, order=nil)
-    json_params = JSON.parse(json) unless json.nil?
+    json_params = json.nil? ? nil : JSON.parse(json)
     page = json_params.present? ? json_params["requested_page"].to_i : 1
-    page = page == 0 ? 1 : page
+
     order = (order && ['ASC', 'DESC'].include?(order.upcase)) ? order : 'DESC'
-    evaluations = generate_query(page, json_params["filters"]) if json_params.present?
+    evaluations = generate_query(page, json_params["filters"])
     items = serialise(evaluations)
     structure_data(page, items)
   end
