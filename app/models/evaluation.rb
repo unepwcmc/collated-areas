@@ -78,9 +78,7 @@ class Evaluation < ApplicationRecord
 
   def self.parse_filters(filters)
     site_ids = []
-    where_params = {}
-    where_params[:methodology] = ""
-    where_params[:year] = ""
+    where_params = {methodology: "", year: ""}
     filters.each do |filter|
       options = filter["options"]
       case filter['name']
