@@ -131,8 +131,8 @@
         }
 
         this.$store.commit('updateFilterOptions', newFilterOptions)
-
-        eventHub.$emit('filtersChanged')
+        this.$store.commit('updateRequestedPage', 1)
+        eventHub.$emit('getNewItems')
       }
     }
   }
