@@ -9,7 +9,7 @@
       :type="filter.type">
     </data-filter>
 
-    <!-- <download-csv class="inline-block"></download-csv> -->
+    <download-csv class="inline-block" :total-items="totalItems"></download-csv>
   </div>
 </template>
 
@@ -27,6 +27,10 @@
       filters: {
         required: true,
         type: Array
+      },
+      totalItems: {
+        required: true,
+        type: Number
       }
     },
 

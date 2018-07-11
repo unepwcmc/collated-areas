@@ -3,8 +3,8 @@
     @click="download"
     title="Download CSV file of filtered protected area management effectiveness evaluations" 
     class="button button--download button--green"
-    :class="{ 'button--disabled' : !hasResults }"
-    v-bind="{ 'disabled' : !hasResults }">
+    :class="{ 'button--disabled' : noResults }"
+    v-bind="{ 'disabled' : noResults }">
     CSV
   </button>
 </template>
@@ -15,9 +15,16 @@
   export default {
     name: 'download-csv',
 
+    props: {
+      totalItems: {
+        required: true,
+        type: Number
+      }
+    },
+
     computed: {
-      hasResults () {
-        return this.$store.state.totalItemsOnCurrentPage
+      noResults () {
+        return this.totalItems == 0
       }
     },
 
