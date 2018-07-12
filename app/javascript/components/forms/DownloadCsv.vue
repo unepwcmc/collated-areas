@@ -1,7 +1,7 @@
 <template>
-  <button 
+  <button
     @click="download"
-    title="Download CSV file of filtered protected area management effectiveness evaluations" 
+    title="Download CSV file of filtered protected area management effectiveness evaluations"
     class="button button--download button--green"
     :class="{ 'button--disabled' : noResults }"
     v-bind="{ 'disabled' : noResults }">
@@ -35,11 +35,21 @@
           config = {
             headers: {
               'X-CSRF-Token': csrf,
-              'Accept': 'aaplication/json'
+              'Accept': 'aaplication/json',
+              'responseType': 'blob'
             }
           }
 
         axios.post('/download', data, config)
+        .then((response) => {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          var date = new Date().toJSON().slice(0,10)
+          link.href = url;
+          link.setAttribute('download', 'protectedplanet-pame-' + date + '.csv');
+          document.body.appendChild(link);
+          link.click();
+        })
         .then(function (response) {
           console.log(response)
         })
