@@ -42,18 +42,43 @@
 
         axios.post('/download', data, config)
           .then((response) => {
-            const url = window.URL.createObjectURL(new Blob([response.data])),
-              link = document.createElement('a'),
-              date = new Date().toJSON().slice(0,10)
-            
-            link.href = url
-            link.setAttribute('download', `protectedplanet-pame-${date}.csv`)
-            link.click()
-            window.URL.revokeObjectURL(url)
+            const date = new Date().toJSON().slice(0,10),
+              filename = `protectedplanet-pame-${date}.csv`
+
+            this.createBlob(filename, response.data)
           })
           .catch(function (error) {
             console.log(error)
           })
+      },
+
+      createBlob (filename, data) {
+        let blob = new Blob([data])
+
+        if (typeof window.navigator.msSaveBlob !== 'undefined') {
+          // IE workaround for "HTML7007: One or more blob URLs were 
+          // revoked by closing the blob for which they were created. 
+          // These URLs will no longer resolve as the data backing 
+          // the URL has been freed."
+          window.navigator.msSaveBlob(blob, filename)
+
+        } else {
+          const blobURL = window.URL.createObjectURL(blob),
+            tempLink = document.createElement('a')
+
+          // Safari thinks _blank anchor are pop ups. We only want to set _blank
+          // target if the browser does not support the HTML5 download attribute.
+          // This allows you to download files in desktop safari if pop up blocking 
+          // is enabled.
+          if (typeof tempLink.download === 'undefined') {
+              tempLink.setAttribute('target', '_blank')
+          }
+          
+          tempLink.href = blobURL
+          tempLink.setAttribute('download', filename)
+          tempLink.click()
+          window.URL.revokeObjectURL(blobURL)
+        }
       }
     }
   }
