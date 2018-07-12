@@ -30,6 +30,7 @@
 
     methods: {
       download () {
+        console.log('download')
         const csrf = document.querySelectorAll('meta[name="csrf-token"]')[0].getAttribute('content'),
           data = this.$store.state.selectedFilterOptions,
           config = {
@@ -42,6 +43,7 @@
 
         axios.post('/download', data, config)
           .then((response) => {
+            console.log('post successful')
             const date = new Date().toJSON().slice(0,10),
               filename = `protectedplanet-pame-${date}.csv`
 
@@ -54,6 +56,7 @@
 
       createBlob (filename, data) {
         let blob = new Blob([data])
+        console.log('blob')
 
         if (typeof window.navigator.msSaveBlob !== 'undefined') {
           // IE workaround for "HTML7007: One or more blob URLs were 
@@ -76,9 +79,20 @@
           
           tempLink.href = blobURL
           tempLink.setAttribute('download', filename)
-          tempLink.click()
+          this.simulateClick(tempLink)
           window.URL.revokeObjectURL(blobURL)
         }
+      },
+
+      simulateClick (element) {
+        // created because standard .click() doesn't work in Firefox
+        const event = new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        })
+        // If cancelled, don't dispatch our event
+        var canceled = !element.dispatchEvent(event)
       }
     }
   }
