@@ -22,6 +22,6 @@ class HomeController < ApplicationController
     send_data Evaluation.to_csv(params.to_json), {
               type: "text/csv; charset=iso-8859-1; header=present",
               disposition: "attachment",
-              filename: "protectedplanet-pame-#{Date.today}.csv" }
+              filename: "protectedplanet-pame.csv" }
   end
 end

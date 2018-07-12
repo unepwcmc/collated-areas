@@ -35,27 +35,25 @@
           config = {
             headers: {
               'X-CSRF-Token': csrf,
-              'Accept': 'aaplication/json',
+              'Accept': 'text/csv',
               'responseType': 'blob'
             }
           }
 
         axios.post('/download', data, config)
-        .then((response) => {
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
-          var date = new Date().toJSON().slice(0,10)
-          link.href = url;
-          link.setAttribute('download', 'protectedplanet-pame-' + date + '.csv');
-          document.body.appendChild(link);
-          link.click();
-        })
-        .then(function (response) {
-          console.log(response)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
+          .then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data])),
+              link = document.createElement('a'),
+              date = new Date().toJSON().slice(0,10)
+            
+            link.href = url
+            link.setAttribute('download', `protectedplanet-pame-${date}.csv`)
+            link.click()
+            window.URL.revokeObjectURL(url)
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
       }
     }
   }

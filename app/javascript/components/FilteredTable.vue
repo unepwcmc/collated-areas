@@ -79,8 +79,6 @@
         axios.post('/list', data)
         .then(response => {
           this.updateProperties(response.data)
-
-          console.log(response.data)
         })
         .catch(function (error) {
           console.log(error)
