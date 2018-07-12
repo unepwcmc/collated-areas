@@ -87,7 +87,6 @@ class Evaluation < ApplicationRecord
         site_ids << countries.map{ |iso3| Country.find_by(iso3: iso3).sites.pluck(:id) }
         where_params[:sites] = "site_id IN (#{site_ids.join(',')})" unless options.empty?
       when 'methodology'
-        byebug
         options = options.map{ |e| "'#{e}'" }
         where_params[:methodology] = "#{filter["name"]} IN (#{options.join(',')})" unless options.empty?
       when 'year'
