@@ -78,19 +78,19 @@ class Evaluation < ApplicationRecord
 
   def self.parse_filters(filters)
     site_ids = []
-    where_params = {methodology: "", year: ""}
+    where_params = {sites: "", methodology: "", year: ""}
     filters.each do |filter|
       options = filter["options"]
       case filter['name']
       when 'iso3'
         countries = options
         site_ids << countries.map{ |iso3| Country.find_by(iso3: iso3).sites.pluck(:id) }
-        where_params[:sites] = "site_id IN (#{site_ids.join(',')})"
+        where_params[:sites] = "site_id IN (#{site_ids.join(',')})" unless options.empty?
       when 'methodology'
         options = options.map{ |e| "'#{e}'" }
-        where_params[:methodology] = "#{filter["name"]} IN (#{options.join(',')})"
+        where_params[:methodology] = "#{filter["name"]} IN (#{options.join(',')})" unless options.empty?
       when 'year'
-        where_params[:year] = "#{filter["name"]} IN (#{options.join(',')})"
+        where_params[:year] = "#{filter["name"]} IN (#{options.join(',')})" unless options.empty?
       end
     end
     where_params
