@@ -7,6 +7,14 @@ class Evaluation < ApplicationRecord
 
   TABLE_ATTRIBUTES = [
     {
+      title: 'Name',
+      field: 'name'
+    },
+    {
+      title: 'Designation',
+      field: 'designation'
+    },
+    {
       title: 'WDPA ID',
       field: 'wdpa_id'
     },
@@ -33,14 +41,6 @@ class Evaluation < ApplicationRecord
     {
       title: 'Metadata ID',
       field: 'metadata_id'
-    },
-    {
-      title: 'Name',
-      field: 'name'
-    },
-    {
-      title: 'Designation',
-      field: 'designation'
     }
   ]
 

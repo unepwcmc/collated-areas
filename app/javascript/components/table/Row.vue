@@ -1,5 +1,7 @@
 <template>
 <tr>
+    <td>{{ item.name }}</td>
+    <td>{{ item.designation }}</td>
     <td><a :href="wdpaUrl(item.wdpa_id)" title="View protected area on Protected Planet" target="_blank">{{ item.wdpa_id }}</a></td>
     <td>{{ item.id }}</td>
     <td>{{ checkForMultiples('iso3') }}</td>
@@ -7,8 +9,6 @@
     <td>{{ item.year }}</td>
     <td v-html="assessmentUrl(item.url)"></td>
     <td @click="openModal()" class="modal__trigger">{{ item.metadata_id }}</td>
-    <td>{{ item.name }}</td>
-    <td>{{ item.designation }}</td>
   </tr>
 </template>
 
