@@ -9,6 +9,7 @@ Vue.use(Vuex)
 // create store
 export default new Vuex.Store({
   state: {
+    totalItemsOnCurrentPage: 0,
     requestedPage: 1,
     selectedFilterOptions: [], // an array containing an object for each filter that has an array of selected options
     modalContent: {},
@@ -18,6 +19,10 @@ export default new Vuex.Store({
   mutations: {
     updateRequestedPage (state, page) {
       this.state.requestedPage = page
+    },
+
+    updateTotalItemsOnCurrentPage (state, total) {
+      this.state.totalItemsOnCurrentPage = total
     },
 
     setFilterOptions (state, options) {

@@ -19,9 +19,15 @@ class HomeController < ApplicationController
   end
 
   def download
-    send_data Evaluation.to_csv(params[:ids]&.split(",")), {
+    send_file Rails.root.join('lib', 'data', 'seed', 'PAME_Data-2018-07-11.csv'), {
               type: "text/csv; charset=iso-8859-1; header=present",
               disposition: "attachment",
-              filename: "protectedplanet-pame-#{Date.today}.csv" }
+              filename: "protectedplanet-pame.csv" }
+    # This needs to be uncommented once we have sorted out the CSV generation issue
+    # The issue being that the CSV so large that it takes a long time to generate
+    # send_data Evaluation.to_csv(params.to_json), {
+    #           type: "text/csv; charset=iso-8859-1; header=present",
+    #           disposition: "attachment",
+    #           filename: "protectedplanet-pame.csv" }
   end
 end

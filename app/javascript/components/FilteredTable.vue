@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <filters :filters="filters"></filters>
+    <filters :filters="filters" :total-items="totalItems"></filters>
 
     <table class="table table--head">
       <table-head :filters="attributes"></table-head>
@@ -79,8 +79,6 @@
         axios.post('/list', data)
         .then(response => {
           this.updateProperties(response.data)
-
-          console.log(response.data)
         })
         .catch(function (error) {
           console.log(error)
