@@ -19,7 +19,7 @@ class HomeController < ApplicationController
   end
 
   def download
-    send_file Rails.root.join('lib', 'data', 'seed', 'PAME_Data-2018-07-11.csv'), {
+    send_file Rails.root.join('lib', 'data', 'seed', 'PAME_Data-2018-07-25.csv'), {
               type: "text/csv; charset=iso-8859-1; header=present",
               disposition: "attachment",
               filename: "protectedplanet-pame.csv" }
