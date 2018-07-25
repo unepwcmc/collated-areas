@@ -54,7 +54,7 @@ namespace :import do
           Rails.logger.info "Cannot import! #{evaluation.id}"
         end
       rescue ActiveRecord::RecordInvalid => invalid
-        puts "Problem with evaluation: #{site_evaluation_row["evaluation_id"]}, country: #{site_evaluation_row["country"]}"
+        Rails.logger.info "Problem with evaluation: #{site_evaluation_row["evaluation_id"]}, country: #{site_evaluation_row["country"]}"
       end
 
     end
