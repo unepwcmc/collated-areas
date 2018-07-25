@@ -23,7 +23,7 @@ class Evaluation < ApplicationRecord
       field: 'id'
     },
     {
-      title: 'ISO3/Country',
+      title: 'Country',
       field: 'iso3'
     },
     {
@@ -164,7 +164,7 @@ class Evaluation < ApplicationRecord
       },
       {
         name: "iso3",
-        title: "ISO3/Country",
+        title: "Country",
         options: unique_iso3,
         type: 'multiple'
       },
