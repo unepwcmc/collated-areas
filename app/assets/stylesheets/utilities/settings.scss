@@ -12,16 +12,18 @@
 //**************************************************
 $black: #000000;
 
-$blue-faint: #33548F;
-$blue-light: #EDEEF1;
-$blue: #33548F;
-$blue-dark: #172A4D;
+$blue: #172A4D;
 
-$grey-light: #FAFAFB;
-$grey: #D5D8E1;
+$grey-light: #f2f2f2;
+$grey: #666666;
 $grey-dark: #333333;
 
+$green-light: #71a32b;
 $green: #398439;
+
+$primary-light: lighten($green-light, 60%);
+$primary: $green-light;
+$secondary: $blue;
 
 //**************************************************
 // dimensions
@@ -36,8 +38,8 @@ $body-font: $black;
 $bold: 700;
 
 $fontAwesome: normal normal normal 14px/1 FontAwesome;
-$openSans: 'Open Sans', sans-serif;
-$playfair: 'Playfair Display', serif;
+$sans: 'MuesoSans', sans-serif;
+$serif: 'MuseoSlab', serif;
 
 //**************************************************
 // buttons

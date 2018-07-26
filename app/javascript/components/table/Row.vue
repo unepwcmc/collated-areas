@@ -1,14 +1,14 @@
 <template>
-  <tr @click="openModal()" v-show="item.isActive">
+<tr>
+    <td>{{ item.name }}</td>
+    <td>{{ item.designation }}</td>
+    <td><a :href="wdpaUrl(item.wdpa_id)" title="View protected area on Protected Planet" target="_blank">{{ item.wdpa_id }}</a></td>
     <td>{{ item.id }}</td>
-    <td :title="item.title">{{ projectTitle }}</td>
-    <td>{{ checkForMultiples('donors') }}</td>
-    <td>{{ checkForMultiples('categories') }}</td>
-    <td>{{ checkForMultiples('ecosystem') }}</td>
-    <td>{{ checkForMultiples('country') }}</td>
-    <td>{{ checkForMultiples('ocean_based_region') }}</td>
-    <td>{{ item.total_project_cost }}</td>
-    <td>{{ item.co_funding_entities }}</td>
+    <td>{{ checkForMultiples('iso3') }}</td>
+    <td>{{ item.methodology }}</td>
+    <td>{{ item.year }}</td>
+    <td v-html="assessmentUrl(item.url)"></td>
+    <td @click="openModal()" class="modal__trigger">{{ item.metadata_id }}</td>
   </tr>
 </template>
 
@@ -31,6 +31,20 @@
     },
 
     methods: {
+      wdpaUrl (wdpaId) {
+        return 'https://protectedplanet.net/' + wdpaId
+      },
+
+      assessmentUrl (url) {
+        let link = ''
+
+        if(url.includes('http')) {
+          link = `<a href="${url}" title="View assessment" target="_blank">Link</a>`
+        }
+
+        return link
+      },
+
       openModal () {
         this.$store.commit('updateModalContent', this.item)
 

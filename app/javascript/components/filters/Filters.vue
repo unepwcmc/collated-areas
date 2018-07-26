@@ -9,7 +9,7 @@
       :type="filter.type">
     </data-filter>
 
-    <download-csv class="inline-block"></download-csv>
+    <download-csv class="inline-block" :total-items="totalItems"></download-csv>
   </div>
 </template>
 
@@ -27,6 +27,10 @@
       filters: {
         required: true,
         type: Array
+      },
+      totalItems: {
+        required: true,
+        type: Number
       }
     },
 
@@ -37,6 +41,8 @@
     },
 
     mounted () {
+      this.createSelectedFilterOptions()
+      
       eventHub.$on('clickDropdown', this.updateDropdowns)
     },
 
@@ -45,7 +51,26 @@
         this.children.forEach(filter => {
           filter.isOpen = filter.name == name
         })
-      }
+      },
+
+      createSelectedFilterOptions () {
+        let array = []
+
+        // create an empty array for each filter
+        this.filters.forEach(filter => {
+          if (filter.name !== undefined && filter.options.length > 0) {
+            let obj = {}
+
+            obj.name = filter.name
+            obj.options = []
+            obj.type = filter.type
+
+            array.push(obj)
+          }
+        })
+
+        this.$store.commit('setFilterOptions', array)
+      },
     }
   }
 </script>

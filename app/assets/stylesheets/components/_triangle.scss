@@ -1,0 +1,39 @@
+//**************************************************
+// transparent triangle
+//**************************************************
+$transparentTriangleHeight: 60px;
+
+%transparentTriangle {
+  background-color: white;
+  
+  content: '';
+  width: 50vw; height: 50vw;
+
+  display: block;
+  position: absolute; // had to position absolute instead of inline-block to get them to sit correctly in IE
+}
+
+.triangle--transparent {
+  overflow: hidden;
+  width: 100%; height: $transparentTriangleHeight;
+
+  position: relative;
+
+  &:before {
+    @extend %transparentTriangle;
+    
+    left: 0;
+
+    transform: translateY($transparentTriangleHeight) rotateZ(28deg);
+    transform-origin: top right;
+  }
+
+  &:after {
+    @extend %transparentTriangle;
+    
+    right: 0;
+  
+    transform: translateY($transparentTriangleHeight) rotateZ(-28deg);
+    transform-origin: top left;
+  }
+}

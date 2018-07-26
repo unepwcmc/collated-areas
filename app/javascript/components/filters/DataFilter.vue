@@ -19,7 +19,7 @@
       <div class="filter__buttons">
         <button @click="clear()" class="button--link bold float-left">Clear</button>
         <button @click="cancel()" class="button--link">Cancel</button>
-        <button @click="apply()" class="button--link button--link--green bold">Apply</button>
+        <button @click="apply()" class="button--link button--link--secondary bold">Apply</button>
       </div>
     </div>
   </div>
@@ -131,8 +131,8 @@
         }
 
         this.$store.commit('updateFilterOptions', newFilterOptions)
-
-        eventHub.$emit('filtersChanged')
+        this.$store.commit('updateRequestedPage', 1)
+        eventHub.$emit('getNewItems')
       }
     }
   }
