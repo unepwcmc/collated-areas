@@ -1,3 +1,10 @@
+### 0.1.1
+
+**Update csv data :**
+
+* Tazekka National Park
+* Al-Hoceima National Park
+
 ### 0.1.0
 
 **Initial release:**
