@@ -85,12 +85,12 @@ class Evaluation < ApplicationRecord
       when 'iso3'
         countries = options
         site_ids << countries.map{ |iso3| Country.find_by(iso3: iso3).sites.pluck(:id) }
-        where_params[:sites] = "site_id IN (#{site_ids.join(',')})" unless options.empty?
+        where_params[:sites] = options.empty? ? nil : "site_id IN (#{site_ids.join(',')})"
       when 'methodology'
         options = options.map{ |e| "'#{e}'" }
-        where_params[:methodology] = "#{filter["name"]} IN (#{options.join(',')})" unless options.empty?
+        where_params[:methodology] = options.empty? ? nil : where_params[:methodology] = "#{filter["name"]} IN (#{options.join(',')})"
       when 'year'
-        where_params[:year] = "#{filter["name"]} IN (#{options.join(',')})" unless options.empty?
+        where_params[:year] = options.empty? ? nil : where_params[:year] = "#{filter["name"]} IN (#{options.join(',')})"
       end
     end
     where_params
@@ -177,21 +177,8 @@ class Evaluation < ApplicationRecord
     ].to_json
   end
 
-  def self.run_csv_query(where_params)
-    if where_params[:sites].present?
-      Evaluation
-      .joins(:site)
-      .where(where_params[:sites])
-      .where(where_params[:methodology])
-      .where(where_params[:year])
-    else
-      Evaluation
-      .where(where_params[:methodology])
-      .where(where_params[:year])
-    end
-  end
-
-  def self.generate_csv(evaluations)
+  def self.generate_csv(where_statement)
+    where_statement = where_statement.nil? ? '' : "WHERE #{where_statement}"
     query = <<-SQL
       SELECT e.id AS id,
              e.metadata_id AS metadata_id,
@@ -211,6 +198,7 @@ class Evaluation < ApplicationRecord
              INNER JOIN sources ON e.source_id = sources.id
              INNER JOIN site_countries ON sites.id = site_countries.site_id
              INNER JOIN countries ON site_countries.country_id = countries.id
+             #{where_statement}
              GROUP BY e.id, sites.wdpa_id, sites.name, sites.designation, sources.data_title,
                       sources.resp_party, sources.year, sources.language;
     SQL
@@ -258,13 +246,18 @@ class Evaluation < ApplicationRecord
     json_params = json.nil? ? nil : JSON.parse(json)
     filter_params = json_params["_json"].nil? ? nil : json_params["_json"]
 
-    if filter_params.nil?
-      # this will never be reached currently, need to fix.
-      evaluations = Evaluation.order(id: :asc)
-    else
-      where_params = parse_filters(filter_params)
-      evaluations = run_csv_query(where_params)
+    where_statement = []
+    where_params = parse_filters(filter_params)
+    where_params.map do |k, v|
+      where_statement << where_fields(k,v) unless v.nil?
     end
-    generate_csv(evaluations)
+
+    where_statement = where_statement.length > 1 ? where_statement.join(' AND ') : where_statement.first
+    generate_csv(where_statement)
+  end
+
+  def self.where_fields(k,v)
+    return "e.#{v}" if [:year, :sites].include? (k)
+    return v
   end
 end
