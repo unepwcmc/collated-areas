@@ -192,6 +192,29 @@ class Evaluation < ApplicationRecord
   end
 
   def self.generate_csv(evaluations)
+    query = <<-SQL
+      SELECT e.id AS id,
+             e.metadata_id AS metadata_id,
+             e.url AS url,
+             e.year AS year,
+             e.methodology AS methodology,
+             sites.wdpa_id AS wdpa_id,
+             ARRAY_TO_STRING(ARRAY_AGG(countries.iso3),';') AS countries,
+             sites.name AS site_name,
+             sites.designation AS designation,
+             sources.data_title AS data_title,
+             sources.resp_party AS resp_party,
+             sources.year AS year,
+             sources.language AS language
+             FROM evaluations e
+             INNER JOIN sites ON e.site_id = sites.id
+             INNER JOIN sources ON e.source_id = sources.id
+             INNER JOIN site_countries ON sites.id = site_countries.site_id
+             INNER JOIN countries ON site_countries.country_id = countries.id
+             GROUP BY e.id, sites.wdpa_id, sites.name, sites.designation, sources.data_title,
+                      sources.resp_party, sources.year, sources.language;
+    SQL
+    evaluations = ActiveRecord::Base.connection.execute(query)
     csv_string = CSV.generate do |csv_line|
 
       evaluation_columns = Evaluation.new.attributes.keys
@@ -206,19 +229,23 @@ class Evaluation < ApplicationRecord
 
       csv_line << evaluation_columns.flatten
 
-      evaluations.to_a.each do |evaluation|
-        evaluation_attributes = evaluation.attributes
+      evaluations.each do |evaluation|
+        evaluation_attributes = Evaluation.new.attributes
         evaluation_attributes.delete_if { |k, v| excluded_attributes.include? k }
 
-        evaluation_attributes["evaluation_id"] = evaluation.id
-        evaluation_attributes["wdpa_id"] = evaluation.site.wdpa_id
-        evaluation_attributes["iso3"] = evaluation.site.countries.pluck(:iso3).uniq.join(',').to_s
-        evaluation_attributes["name"] = evaluation.site.name
-        evaluation_attributes["designation"] = evaluation.site.designation
-        evaluation_attributes["source_data_title"] = evaluation.source.data_title
-        evaluation_attributes["source_resp_party"] = evaluation.source.resp_party
-        evaluation_attributes["source_year"] = evaluation.source.year
-        evaluation_attributes["source_language"] = evaluation.source.language
+        evaluation_attributes["evaluation_id"] = evaluation['id']
+        evaluation_attributes["metadata_id"] = evaluation["metadata_id"]
+        evaluation_attributes["url"] = evaluation["url"]
+        evaluation_attributes["year"] = evaluation["year"]
+        evaluation_attributes["methodology"] = evaluation["methodology"]
+        evaluation_attributes["wdpa_id"] = evaluation['wdpa_id']
+        evaluation_attributes["iso3"] = evaluation['countries']
+        evaluation_attributes["name"] = evaluation['site_name']
+        evaluation_attributes["designation"] = evaluation['designation']
+        evaluation_attributes["source_data_title"] = evaluation['data_title']
+        evaluation_attributes["source_resp_party"] = evaluation['resp_party']
+        evaluation_attributes["source_year"] = evaluation['year']
+        evaluation_attributes["source_language"] = evaluation['language']
 
         evaluation_attributes = evaluation_attributes.values.map{ |e| "#{e}" }
         csv_line << evaluation_attributes
