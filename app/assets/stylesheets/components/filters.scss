@@ -43,7 +43,6 @@ $activeTextColour: white;
       @extend .vertical-center;
       background-image: image-url('icons/arrow-down-black.svg');
       content: '';
-      margin: rem-calc(2 0 0 7);
       width: rem-calc(8); height: rem-calc(6);
 
       right: rem-calc(24);
@@ -67,13 +66,16 @@ $activeTextColour: white;
     }
 
       &-total {
+        $total-width: rem-calc(24);
+
         @extend .vertical-center;
         background-color: $activeTextColour;
         border-radius: 100%;
         color: $activeBackgroundColour;
         font-size: rem-calc(18);
+        line-height: $total-width;
         text-align: center;
-        width: rem-calc(24); height: rem-calc(24);
+        width: $total-width; height: $total-width;
 
         display: block;
 
