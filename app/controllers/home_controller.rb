@@ -30,7 +30,7 @@ class HomeController < ApplicationController
     # This needs to be uncommented once we have sorted out the CSV generation issue
     # The issue being that the CSV so large that it takes a long time to generate
     send_data Evaluation.to_csv(params.to_json), {
-              type: "text/csv; charset=iso-8859-1; header=present",
+              type: "text/csv; charset=utf-8; header=present",
               disposition: "attachment",
               filename: "protectedplanet-pame.csv" }
   end

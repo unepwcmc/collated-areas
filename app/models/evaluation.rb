@@ -252,7 +252,7 @@ class Evaluation < ApplicationRecord
       where_statement << where_fields(k,v) unless v.nil?
     end
 
-    where_statement = where_statement.length > 1 ? where_statement.join(' AND ') : where_statement.first
+    where_statement = where_statement.empty? ? nil : where_statement.join(' AND ')
     generate_csv(where_statement)
   end
 
