@@ -5,12 +5,16 @@ class HomeController < ApplicationController
     filters: []
   }.to_json
 
+  # Format for this date is: Month (3 letters) and Year (4 digits) 
+  UPDATED_AT = "Feb 2019"
+
   def index
     @table_attributes = Evaluation::TABLE_ATTRIBUTES.to_json
     @filters = Evaluation.filters_to_json
     @sources = Evaluation.sources_to_json
     @evaluations = Evaluation.paginate_evaluations(DEFAULT_PARAMS).to_json
     @json = Evaluation.paginate_evaluations(DEFAULT_PARAMS).to_json
+    @updated_at = UPDATED_AT
   end
 
   def list
