@@ -183,7 +183,7 @@ class Evaluation < ApplicationRecord
       SELECT e.id AS id,
              e.metadata_id AS metadata_id,
              e.url AS url,
-             e.year AS year,
+             e.year AS evaluation_year,
              e.methodology AS methodology,
              sites.wdpa_id AS wdpa_id,
              ARRAY_TO_STRING(ARRAY_AGG(countries.iso3),';') AS countries,
@@ -191,7 +191,7 @@ class Evaluation < ApplicationRecord
              sites.designation AS designation,
              sources.data_title AS data_title,
              sources.resp_party AS resp_party,
-             sources.year AS year,
+             sources.year AS source_year,
              sources.language AS language
              FROM evaluations e
              INNER JOIN sites ON e.site_id = sites.id
@@ -224,7 +224,7 @@ class Evaluation < ApplicationRecord
         evaluation_attributes["evaluation_id"] = evaluation['id']
         evaluation_attributes["metadata_id"] = evaluation["metadata_id"]
         evaluation_attributes["url"] = evaluation["url"]
-        evaluation_attributes["year"] = evaluation["year"]
+        evaluation_attributes["year"] = evaluation["evaluation_year"]
         evaluation_attributes["methodology"] = evaluation["methodology"]
         evaluation_attributes["wdpa_id"] = evaluation['wdpa_id']
         evaluation_attributes["iso3"] = evaluation['countries']
@@ -232,7 +232,7 @@ class Evaluation < ApplicationRecord
         evaluation_attributes["designation"] = evaluation['designation']
         evaluation_attributes["source_data_title"] = evaluation['data_title']
         evaluation_attributes["source_resp_party"] = evaluation['resp_party']
-        evaluation_attributes["source_year"] = evaluation['year']
+        evaluation_attributes["source_year"] = evaluation['source_year']
         evaluation_attributes["source_language"] = evaluation['language']
 
         evaluation_attributes = evaluation_attributes.values.map{ |e| "#{e}" }
