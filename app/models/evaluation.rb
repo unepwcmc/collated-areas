@@ -85,12 +85,12 @@ class Evaluation < ApplicationRecord
       when 'iso3'
         countries = options
         site_ids << countries.map{ |iso3| Country.find_by(iso3: iso3).sites.pluck(:id) }
-        where_params[:sites] = "site_id IN (#{site_ids.join(',')})" unless options.empty?
+        where_params[:sites] = options.empty? ? nil : "site_id IN (#{site_ids.join(',')})"
       when 'methodology'
         options = options.map{ |e| "'#{e}'" }
-        where_params[:methodology] = "#{filter["name"]} IN (#{options.join(',')})" unless options.empty?
+        where_params[:methodology] = options.empty? ? nil : "#{filter["name"]} IN (#{options.join(',')})"
       when 'year'
-        where_params[:year] = "#{filter["name"]} IN (#{options.join(',')})" unless options.empty?
+        where_params[:year] = options.empty? ? nil : "#{filter["name"]} IN (#{options.join(',')})"
       end
     end
     where_params
@@ -177,22 +177,33 @@ class Evaluation < ApplicationRecord
     ].to_json
   end
 
-  def self.run_csv_query(where_params)
-    if where_params[:sites].present?
-      Evaluation
-      .joins(:site)
-      .where(where_params[:sites])
-      .where(where_params[:methodology])
-      .where(where_params[:year])
-    else
-      Evaluation
-      .where(where_params[:methodology])
-      .where(where_params[:year])
-    end
-  end
-
-  def self.generate_csv(evaluations)
-    csv_string = CSV.generate do |csv_line|
+  def self.generate_csv(where_statement)
+    where_statement = where_statement.empty? ? '' : "WHERE #{where_statement}"
+    query = <<-SQL
+      SELECT e.id AS id,
+             e.metadata_id AS metadata_id,
+             e.url AS url,
+             e.year AS evaluation_year,
+             e.methodology AS methodology,
+             sites.wdpa_id AS wdpa_id,
+             ARRAY_TO_STRING(ARRAY_AGG(countries.iso3),';') AS countries,
+             sites.name AS site_name,
+             sites.designation AS designation,
+             sources.data_title AS data_title,
+             sources.resp_party AS resp_party,
+             sources.year AS source_year,
+             sources.language AS language
+             FROM evaluations e
+             INNER JOIN sites ON e.site_id = sites.id
+             INNER JOIN sources ON e.source_id = sources.id
+             INNER JOIN site_countries ON sites.id = site_countries.site_id
+             INNER JOIN countries ON site_countries.country_id = countries.id
+             #{where_statement}
+             GROUP BY e.id, sites.wdpa_id, sites.name, sites.designation, sources.data_title,
+                      sources.resp_party, sources.year, sources.language;
+    SQL
+    evaluations = ActiveRecord::Base.connection.execute(query)
+    csv_string = CSV.generate(encoding: 'UTF-8') do |csv_line|
 
       evaluation_columns = Evaluation.new.attributes.keys
       evaluation_columns << "evaluation_id"
@@ -206,19 +217,23 @@ class Evaluation < ApplicationRecord
 
       csv_line << evaluation_columns.flatten
 
-      evaluations.to_a.each do |evaluation|
-        evaluation_attributes = evaluation.attributes
+      evaluations.each do |evaluation|
+        evaluation_attributes = Evaluation.new.attributes
         evaluation_attributes.delete_if { |k, v| excluded_attributes.include? k }
 
-        evaluation_attributes["evaluation_id"] = evaluation.id
-        evaluation_attributes["wdpa_id"] = evaluation.site.wdpa_id
-        evaluation_attributes["iso3"] = evaluation.site.countries.pluck(:iso3).uniq.join(',').to_s
-        evaluation_attributes["name"] = evaluation.site.name
-        evaluation_attributes["designation"] = evaluation.site.designation
-        evaluation_attributes["source_data_title"] = evaluation.source.data_title
-        evaluation_attributes["source_resp_party"] = evaluation.source.resp_party
-        evaluation_attributes["source_year"] = evaluation.source.year
-        evaluation_attributes["source_language"] = evaluation.source.language
+        evaluation_attributes["evaluation_id"] = evaluation['id']
+        evaluation_attributes["metadata_id"] = evaluation["metadata_id"]
+        evaluation_attributes["url"] = evaluation["url"]
+        evaluation_attributes["year"] = evaluation["evaluation_year"]
+        evaluation_attributes["methodology"] = evaluation["methodology"]
+        evaluation_attributes["wdpa_id"] = evaluation['wdpa_id']
+        evaluation_attributes["iso3"] = evaluation['countries']
+        evaluation_attributes["name"] = evaluation['site_name']
+        evaluation_attributes["designation"] = evaluation['designation']
+        evaluation_attributes["source_data_title"] = evaluation['data_title']
+        evaluation_attributes["source_resp_party"] = evaluation['resp_party']
+        evaluation_attributes["source_year"] = evaluation['source_year']
+        evaluation_attributes["source_language"] = evaluation['language']
 
         evaluation_attributes = evaluation_attributes.values.map{ |e| "#{e}" }
         csv_line << evaluation_attributes
@@ -231,13 +246,18 @@ class Evaluation < ApplicationRecord
     json_params = json.nil? ? nil : JSON.parse(json)
     filter_params = json_params["_json"].nil? ? nil : json_params["_json"]
 
-    if filter_params.nil?
-      # this will never be reached currently, need to fix.
-      evaluations = Evaluation.order(id: :asc)
-    else
-      where_params = parse_filters(filter_params)
-      evaluations = run_csv_query(where_params)
+    where_statement = []
+    where_params = parse_filters(filter_params)
+    where_params.map do |k, v|
+      where_statement << where_fields(k,v) unless v.nil?
     end
-    generate_csv(evaluations)
+
+    where_statement = where_statement.join(' AND ')
+    generate_csv(where_statement)
+  end
+
+  def self.where_fields(k,v)
+    return "e.#{v}" if [:year, :sites].include? (k)
+    return v
   end
 end
