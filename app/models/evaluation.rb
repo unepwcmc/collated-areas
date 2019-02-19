@@ -203,7 +203,7 @@ class Evaluation < ApplicationRecord
                       sources.resp_party, sources.year, sources.language;
     SQL
     evaluations = ActiveRecord::Base.connection.execute(query)
-    csv_string = CSV.generate do |csv_line|
+    csv_string = CSV.generate(encoding: 'UTF-8') do |csv_line|
 
       evaluation_columns = Evaluation.new.attributes.keys
       evaluation_columns << "evaluation_id"
