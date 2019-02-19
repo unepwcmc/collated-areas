@@ -106,7 +106,7 @@ $activeTextColour: white;
 
     &-list {
       margin-bottom: rem-calc(20);
-      max-height: rem-calc(300);
+      max-height: $filters-menu-max-height;
       overflow-y: scroll;
       overflow-x: hidden; //for IE11
       white-space: nowrap; 
