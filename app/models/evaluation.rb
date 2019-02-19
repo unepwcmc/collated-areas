@@ -88,9 +88,9 @@ class Evaluation < ApplicationRecord
         where_params[:sites] = options.empty? ? nil : "site_id IN (#{site_ids.join(',')})"
       when 'methodology'
         options = options.map{ |e| "'#{e}'" }
-        where_params[:methodology] = options.empty? ? nil : where_params[:methodology] = "#{filter["name"]} IN (#{options.join(',')})"
+        where_params[:methodology] = options.empty? ? nil : "#{filter["name"]} IN (#{options.join(',')})"
       when 'year'
-        where_params[:year] = options.empty? ? nil : where_params[:year] = "#{filter["name"]} IN (#{options.join(',')})"
+        where_params[:year] = options.empty? ? nil : "#{filter["name"]} IN (#{options.join(',')})"
       end
     end
     where_params
