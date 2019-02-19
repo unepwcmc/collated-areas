@@ -178,7 +178,7 @@ class Evaluation < ApplicationRecord
   end
 
   def self.generate_csv(where_statement)
-    where_statement = where_statement.nil? ? '' : "WHERE #{where_statement}"
+    where_statement = where_statement.empty? ? '' : "WHERE #{where_statement}"
     query = <<-SQL
       SELECT e.id AS id,
              e.metadata_id AS metadata_id,
@@ -252,7 +252,7 @@ class Evaluation < ApplicationRecord
       where_statement << where_fields(k,v) unless v.nil?
     end
 
-    where_statement = where_statement.empty? ? nil : where_statement.join(' AND ')
+    where_statement = where_statement.join(' AND ')
     generate_csv(where_statement)
   end
 
