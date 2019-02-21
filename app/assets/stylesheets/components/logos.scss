@@ -1,3 +1,6 @@
+$logo-height: rem-calc(31);
+$unepwcmc-w-to-h-ratio: 118/27;
+
 .logo {
   background-repeat: no-repeat;
   background-size: contain;
@@ -7,11 +10,12 @@
 
   &-iucn {
     background-image: image-url('logos/logo-iucn.png');
-    width: rem-calc(31); height: rem-calc(31);
+    width: $logo-height; height: $logo-height;
   }
 
   &-unepwcmc {
-    background-image: url('https://s3.amazonaws.com/wcmc.logo/UN-Environment-WCMC+logo+2017+white.svg');
-    width: rem-calc(94); height: rem-calc(31);
+    background-image: url('https://s3.amazonaws.com/wcmc.logo/UNEP_WCMC_logo_white.svg');
+    background-position: center;
+    width: $unepwcmc-w-to-h-ratio * $logo-height; height: $logo-height;
   }
 }

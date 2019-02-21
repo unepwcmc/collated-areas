@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div class="filtered-table relative">
     <filters :filters="filters" :total-items="totalItems"></filters>
 
     <table class="table table--head">
