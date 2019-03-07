@@ -13,6 +13,10 @@
 //**************************************************
 // table styles
 //**************************************************
+.filtered-table {
+  min-height: $filters-menu-max-height + rem-calc(80);
+}
+
 .table {
 
   &--head {

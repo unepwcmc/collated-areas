@@ -1,6 +1,12 @@
+### 0.1.2
+
+**Update csv generation:**
+
+Much improved SQL query and some fixes for making the filters work.
+
 ### 0.1.1
 
-**Update csv data :**
+**Update csv data:**
 
 * Tazekka National Park
 * Al-Hoceima National Park
