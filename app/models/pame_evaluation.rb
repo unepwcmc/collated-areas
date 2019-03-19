@@ -85,8 +85,8 @@ class PameEvaluation < ApplicationRecord
       case filter['name']
       when 'iso3'
         countries = options
-        site_ids << countries.map{ |iso3| Country.find_by(iso3: iso3).sites.pluck(:id) }
-        where_params[:sites] = options.empty? ? nil : "site_id IN (#{site_ids.join(',')})"
+        site_ids << countries.map{ |iso3| Country.find_by(iso_3: iso3).protected_areas.pluck(:id) }
+        where_params[:sites] = options.empty? ? nil : "protected_area_id IN (#{site_ids.join(',')})"
       when 'methodology'
         options = options.map{ |e| "'#{e}'" }
         where_params[:methodology] = options.empty? ? nil : "#{filter["name"]} IN (#{options.join(',')})"
@@ -100,7 +100,7 @@ class PameEvaluation < ApplicationRecord
   def self.run_query(page, where_params)
     if where_params[:sites].present?
       PameEvaluation
-      .joins(:site)
+      .joins(:protected_area)
       .where(where_params[:sites])
       .where(where_params[:methodology])
       .where(where_params[:year])
@@ -186,23 +186,29 @@ class PameEvaluation < ApplicationRecord
              e.url AS url,
              e.year AS evaluation_year,
              e.methodology AS methodology,
-             sites.wdpa_id AS wdpa_id,
-             ARRAY_TO_STRING(ARRAY_AGG(countries.iso3),';') AS countries,
+             protected_areas.wdpa_id AS wdpa_id,
+             ARRAY_TO_STRING(ARRAY_AGG(countries.iso_3),';') AS countries,
              sites.name AS site_name,
              sites.designation AS designation,
-             sources.data_title AS data_title,
-             sources.resp_party AS resp_party,
-             sources.year AS source_year,
-             sources.language AS language
+             pame_sources.data_title AS data_title,
+             pame_sources.resp_party AS resp_party,
+             pame_sources.year AS source_year,
+             pame_sources.language AS language
              FROM evaluations e
              INNER JOIN sites ON e.site_id = sites.id
-             INNER JOIN sources ON e.source_id = sources.id
+             INNER JOIN sources ON e.pame_source_id = pame_sources.id
              INNER JOIN site_countries ON sites.id = site_countries.site_id
              INNER JOIN countries ON site_countries.country_id = countries.id
              #{where_statement}
              GROUP BY e.id, sites.wdpa_id, sites.name, sites.designation, sources.data_title,
                       sources.resp_party, sources.year, sources.language;
     SQL
+
+    # INNER JOIN sites ON e.site_id = sites.id
+    # INNER JOIN sources ON e.pame_source_id = pame_sources.id
+    # INNER JOIN site_countries ON sites.id = site_countries.site_id
+    # INNER JOIN countries ON site_countries.country_id = countries.id
+
     evaluations = ActiveRecord::Base.connection.execute(query)
     csv_string = CSV.generate(encoding: 'UTF-8') do |csv_line|
 
@@ -228,7 +234,7 @@ class PameEvaluation < ApplicationRecord
         evaluation_attributes["year"] = evaluation["evaluation_year"]
         evaluation_attributes["methodology"] = evaluation["methodology"]
         evaluation_attributes["wdpa_id"] = evaluation['wdpa_id']
-        evaluation_attributes["iso3"] = evaluation['countries']
+        evaluation_attributes["iso_3"] = evaluation['countries']
         evaluation_attributes["name"] = evaluation['site_name']
         evaluation_attributes["designation"] = evaluation['designation']
         evaluation_attributes["source_data_title"] = evaluation['data_title']
