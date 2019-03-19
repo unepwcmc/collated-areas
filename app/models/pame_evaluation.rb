@@ -1,9 +1,10 @@
 require 'csv'
 
-class Evaluation < ApplicationRecord
-  belongs_to :site
-  belongs_to :source
-  validates :metadata_id, :url, :year, :methodology, presence: true
+class PameEvaluation < ApplicationRecord
+  belongs_to :protected_area
+  belongs_to :pame_source
+
+  validates :methodology, :year, :protected_area, :metadata_id, :url, presence: true
 
   TABLE_ATTRIBUTES = [
     {
@@ -68,7 +69,7 @@ class Evaluation < ApplicationRecord
 
   def self.generate_query(page, filter_params)
     # if params are empty then return the paginated results without filtering
-    return Evaluation.order('id ASC').paginate(page: page || 1, per_page: 100) if filter_params.empty?
+    return PameEvaluation.order('id ASC').paginate(page: page || 1, per_page: 100) if filter_params.empty?
 
     filters = filter_params.select { |hash| hash["options"].present? }
 
@@ -98,14 +99,14 @@ class Evaluation < ApplicationRecord
 
   def self.run_query(page, where_params)
     if where_params[:sites].present?
-      Evaluation
+      PameEvaluation
       .joins(:site)
       .where(where_params[:sites])
       .where(where_params[:methodology])
       .where(where_params[:year])
       .paginate(page: page || 1, per_page: 100).order('id ASC')
     else
-      Evaluation
+      PameEvaluation
       .where(where_params[:methodology])
       .where(where_params[:year])
       .paginate(page: page || 1, per_page: 100).order('id ASC')
@@ -120,25 +121,25 @@ class Evaluation < ApplicationRecord
         total_entries: evaluations.total_entries,
         total_pages: evaluations.total_pages,
         id: evaluation.id,
-        wdpa_id: evaluation.site.wdpa_id,
-        iso3: evaluation.site.countries.pluck(:iso3).sort,
+        wdpa_id: evaluation.protected_area.wdpa_id,
+        iso3: evaluation.protected_area.countries.pluck(:iso_3).sort,
         methodology: evaluation.methodology,
         year: evaluation.year.to_s,
         url: evaluation.url,
         metadata_id: evaluation.metadata_id,
-        source_id: evaluation.source.id,
-        name: evaluation.site.name,
-        designation: evaluation.site.designation,
-        data_title: evaluation.source.data_title,
-        resp_party: evaluation.source.resp_party,
-        language: evaluation.source.language,
-        source_year: evaluation.source.year
+        source_id: evaluation.pame_source.id,
+        name: evaluation.protected_area.name,
+        designation: evaluation.protected_area.designation.name,
+        data_title: evaluation.pame_source.data_title,
+        resp_party: evaluation.pame_source.resp_party,
+        language: evaluation.pame_source.language,
+        source_year: evaluation.pame_source.year
       }
     end
   end
 
   def self.sources_to_json
-    sources = Source.all.order(id: :asc)
+    sources = PameSource.all.order(id: :asc)
     sources.to_a.map! do |source|
       {
         id: source.id,
@@ -151,9 +152,9 @@ class Evaluation < ApplicationRecord
   end
 
   def self.filters_to_json
-    unique_methodologies = Evaluation.pluck(:methodology).uniq.sort
-    unique_iso3 = Country.pluck(:iso3).uniq.sort
-    unique_year = Evaluation.pluck(:year).uniq.map(&:to_s).sort
+    unique_methodologies = PameEvaluation.pluck(:methodology).uniq.sort
+    unique_iso3 = Country.pluck(:iso_3).uniq.sort
+    unique_year = PameEvaluation.pluck(:year).uniq.map(&:to_s).sort
 
     [
       {
@@ -205,7 +206,7 @@ class Evaluation < ApplicationRecord
     evaluations = ActiveRecord::Base.connection.execute(query)
     csv_string = CSV.generate(encoding: 'UTF-8') do |csv_line|
 
-      evaluation_columns = Evaluation.new.attributes.keys
+      evaluation_columns = PameEvaluation.new.attributes.keys
       evaluation_columns << "evaluation_id"
 
       excluded_attributes = ["created_at", "updated_at", "id", "site_id", "source_id"]
