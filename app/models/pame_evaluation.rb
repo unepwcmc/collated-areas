@@ -182,9 +182,9 @@ class PameEvaluation < ApplicationRecord
     evaluations = PameEvaluation
     .includes(:pame_source, protected_area: [:countries, :designation])
     .joins(:pame_source, protected_area: [:countries, :designation])
-    .where("pame_evaluations.#{where_params[:sites]}")
+    .where(where_params[:sites].nil? ? nil : "pame_evaluations.#{where_params[:sites]}" )
     .where(where_params[:methodology])
-    .where("pame_evaluations.#{where_params[:year]}")
+    .where(where_params[:year].nil? ? nil : "pame_evaluations.#{where_params[:year]}")
 
     csv_string = CSV.generate(encoding: 'UTF-8') do |csv_line|
 
