@@ -178,13 +178,33 @@ class PameEvaluation < ApplicationRecord
     ].to_json
   end
 
-  def self.generate_csv(where_params)
-    evaluations = PameEvaluation
-    .includes(:pame_source, protected_area: [:countries, :designation])
-    .joins(:pame_source, protected_area: [:countries, :designation])
-    .where(where_params[:sites].nil? ? nil : "pame_evaluations.#{where_params[:sites]}" )
-    .where(where_params[:methodology])
-    .where(where_params[:year].nil? ? nil : "pame_evaluations.#{where_params[:year]}")
+  def self.generate_csv(where_statement)
+    where_statement = where_statement.empty? ? '' : "WHERE #{where_statement}"
+    query = <<-SQL
+      SELECT e.id AS id,
+             e.metadata_id AS metadata_id,
+             e.url AS url,
+             e.year AS evaluation_year,
+             e.methodology AS methodology,
+             protected_areas.wdpa_id AS wdpa_id,
+             ARRAY_TO_STRING(ARRAY_AGG(countries.iso_3),';') AS countries,
+             protected_areas.name AS site_name,
+             designations.name AS designation,
+             pame_sources.data_title AS data_title,
+             pame_sources.resp_party AS resp_party,
+             pame_sources.year AS source_year,
+             pame_sources.language AS language
+             FROM pame_evaluations e
+             INNER JOIN protected_areas ON e.protected_area_id = protected_areas.id
+             INNER JOIN pame_sources ON e.pame_source_id = pame_sources.id
+             INNER JOIN countries_protected_areas ON protected_areas.id = countries_protected_areas.protected_area_id
+             INNER JOIN countries ON countries_protected_areas.country_id = countries.id
+             INNER JOIN designations ON protected_areas.designation_id = designations.id
+             #{where_statement}
+             GROUP BY e.id, protected_areas.wdpa_id, protected_areas.name, designation, pame_sources.data_title,
+                      pame_sources.resp_party, pame_sources.year, pame_sources.language;
+    SQL
+    evaluations = ActiveRecord::Base.connection.execute(query)
 
     csv_string = CSV.generate(encoding: 'UTF-8') do |csv_line|
 
@@ -204,19 +224,19 @@ class PameEvaluation < ApplicationRecord
         evaluation_attributes = PameEvaluation.new.attributes
         evaluation_attributes.delete_if { |k, v| excluded_attributes.include? k }
 
-        evaluation_attributes["evaluation_id"] = evaluation.id
-        evaluation_attributes["metadata_id"] = evaluation.metadata_id
-        evaluation_attributes["url"] = evaluation.url
-        evaluation_attributes["year"] = evaluation.year
-        evaluation_attributes["methodology"] = evaluation.methodology
-        evaluation_attributes["wdpa_id"] = evaluation.protected_area.wdpa_id
-        evaluation_attributes["iso_3"] = evaluation.protected_area.countries.pluck(:iso_3).join(",")
-        evaluation_attributes["name"] = evaluation.protected_area.name
-        evaluation_attributes["designation"] = evaluation.protected_area.designation.name
-        evaluation_attributes["source_data_title"] = evaluation.pame_source.data_title
-        evaluation_attributes["source_resp_party"] = evaluation.pame_source.resp_party
-        evaluation_attributes["source_year"] = evaluation.pame_source.year
-        evaluation_attributes["source_language"] = evaluation.pame_source.language
+        evaluation_attributes["evaluation_id"] = evaluation['id']
+        evaluation_attributes["metadata_id"] = evaluation['metadata_id']
+        evaluation_attributes["url"] = evaluation['url']
+        evaluation_attributes["year"] = evaluation['year']
+        evaluation_attributes["methodology"] = evaluation['methodology']
+        evaluation_attributes["wdpa_id"] = evaluation['wdpa_id']
+        evaluation_attributes["iso_3"] = evaluation['countries']
+        evaluation_attributes["name"] = evaluation['site_name']
+        evaluation_attributes["designation"] = evaluation['designation']
+        evaluation_attributes["source_data_title"] = evaluation['data_title']
+        evaluation_attributes["source_resp_party"] = evaluation['resp_party']
+        evaluation_attributes["source_year"] = evaluation['source_year']
+        evaluation_attributes["source_language"] = evaluation['language']
 
         evaluation_attributes = evaluation_attributes.values.map{ |e| "#{e}" }
         csv_line << evaluation_attributes
@@ -229,7 +249,19 @@ class PameEvaluation < ApplicationRecord
     json_params = json.nil? ? nil : JSON.parse(json)
     filter_params = json_params["_json"].nil? ? nil : json_params["_json"]
 
+    where_statement = []
     where_params = parse_filters(filter_params)
+    where_params.map do |k, v|
+      where_statement << where_fields(k,v) unless v.nil?
+    end
+
+    where_statement = where_statement.join(' AND ')
+    generate_csv(where_statement)
+  end
+
+  def self.where_fields(k,v)
+    return "e.#{v}" if [:year, :sites].include? (k)
+    return v
     generate_csv(where_params)
   end
 end
