@@ -1,3 +1,9 @@
+### 0.1.3
+
+**Update csv data:**
+
+Updates to the csv data including removal of duplicates.
+
 ### 0.1.2
 
 **Update csv generation:**
