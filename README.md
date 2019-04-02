@@ -9,7 +9,7 @@ rails db:migrate
 
 To import the data please run this command:
 ```
-rake import:sites['lib/data/seed/PAME_Data-2019-01-31.csv']
+rake import:sites['lib/data/seed/PAME_Data-2019-03-29.csv']
 ```
 
 Finally please run:
