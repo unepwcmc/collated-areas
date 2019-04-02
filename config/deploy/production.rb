@@ -1,11 +1,11 @@
 set :stage, :production
-set :branch, "master"
+set :branch, "new_production_deploy"
 
 
-server "web-production.linode.unep-wcmc.org", user: 'wcmc', roles: %w{app web db}
+server "new-web.pp-production.linode.protectedplanet.net", user: 'wcmc', roles: %w{app web db}
 
-set :application, "protectedplanet-pame"
-set :server_name, "protectedplanet-pame"
+set :application, "pame"
+set :server_name, "pame"
 set :sudo_user, "wcmc"
 set :app_port, "80"
 
