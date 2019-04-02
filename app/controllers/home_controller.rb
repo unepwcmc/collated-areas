@@ -6,7 +6,7 @@ class HomeController < ApplicationController
   }.to_json
 
   # Format for this date is: Month (3 letters) and Year (4 digits)
-  UPDATED_AT = "Feb 2019".freeze
+  UPDATED_AT = "Apr 2019".freeze
 
   def index
     @table_attributes = Evaluation::TABLE_ATTRIBUTES.to_json
