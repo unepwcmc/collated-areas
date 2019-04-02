@@ -1,16 +1,13 @@
 set :stage, :staging
-set :branch, "develop"
+set :branch, "new_staging_server"
 
 
-server "web-staging.linode.unep-wcmc.org", user: 'wcmc', roles: %w{app web db}
+server "new-web.pp-staging.linode.protectedplanet.net", user: 'wcmc', roles: %w{app web db}
 
 set :application, "protectedplanet-pame"
 set :server_name, "protectedplanet-pame"
 set :sudo_user, "wcmc"
 set :app_port, "80"
-
-
-
 
 
 
