@@ -9,16 +9,16 @@ class HomeController < ApplicationController
   UPDATED_AT = "Apr 2019".freeze
 
   def index
-    @table_attributes = Evaluation::TABLE_ATTRIBUTES.to_json
-    @filters = Evaluation.filters_to_json
-    @sources = Evaluation.sources_to_json
-    @evaluations = Evaluation.paginate_evaluations(DEFAULT_PARAMS).to_json
-    @json = Evaluation.paginate_evaluations(DEFAULT_PARAMS).to_json
+    @table_attributes = PameEvaluation::TABLE_ATTRIBUTES.to_json
+    @filters = PameEvaluation.filters_to_json
+    @sources = PameEvaluation.sources_to_json
+    @evaluations = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS).to_json
+    @json = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS).to_json
     @updated_at = UPDATED_AT
   end
 
   def list
-    @evaluations = Evaluation.paginate_evaluations(params.to_json)
+    @evaluations = PameEvaluation.paginate_evaluations(params.to_json)
     render json: @evaluations
   end
 
@@ -29,7 +29,7 @@ class HomeController < ApplicationController
     #           filename: "protectedplanet-pame.csv" }
     # This needs to be uncommented once we have sorted out the CSV generation issue
     # The issue being that the CSV so large that it takes a long time to generate
-    send_data Evaluation.to_csv(params.to_json), {
+    send_data PameEvaluation.to_csv(params.to_json), {
               type: "text/csv; charset=utf-8; header=present",
               disposition: "attachment",
               filename: "protectedplanet-pame.csv" }
