@@ -1,20 +1,23 @@
-# SQLite version 3.x
-#   gem install sqlite3
-#
-#   Ensure the SQLite 3 gem is defined in your Gemfile
-#   gem 'sqlite3'
-development:
-  adapter: postgresql
-  encoding: utf-8
-  database: collated_areas_development
+default: &default
+  host: localhost
+  encoding: unicode
+  adapter: postgis
   pool: 5
+  timeout: 5000
   username: postgres
-  password:
+  database: pp_development
+
+development:
+  <<: *default
 
 test:
-  adapter: postgresql
-  encoding: utf-8
-  database: collated_areas_test
-  pool: 5
-  username: postgres
-  password:
+  <<: *default
+  database: pp_test
+
+production:
+  <<: *default
+  database: pp_production
+
+staging:
+  <<: *default
+database: pp_staging

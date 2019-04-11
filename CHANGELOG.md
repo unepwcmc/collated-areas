@@ -1,3 +1,9 @@
+### 0.1.4
+
+**Switch to using Protected Planet database:**
+
+Rework of various models and removal of import rake task. Use the Protected Planet database.
+
 ### 0.1.3
 
 **Update csv data:**
