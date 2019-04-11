@@ -1,4 +1,0 @@
-[submodule "db"]
-	path = db
-	url = git@github.com:unepwcmc/protectedplanet-db.git
-	branch = develop
