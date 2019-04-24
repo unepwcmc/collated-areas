@@ -6,6 +6,8 @@ class PameEvaluation < ApplicationRecord
 
   validates :methodology, :year, :protected_area, :metadata_id, :url, presence: true
 
+  RESTRICTED_WDPA_ID = ProtectedArea.restricted.id
+
   TABLE_ATTRIBUTES = [
     {
       title: 'Name',
@@ -115,21 +117,27 @@ class PameEvaluation < ApplicationRecord
 
   def self.serialise(evaluations)
     evaluations.to_a.map! do |evaluation|
+      wdpa_id = evaluation.protected_area.wdpa_id
+      restricted = wdpa_id == RESTRICTED_WDPA_ID ? true : false
+      designation = evaluation.protected_area.designation&.name || "N/A"
+      iso3 = evaluation.protected_area.countries.pluck(:iso_3).sort
+      iso3 = iso3 == [] ? ["Restricted"] : iso3
       {
         current_page: evaluations.current_page,
         per_page: evaluations.per_page,
         total_entries: evaluations.total_entries,
         total_pages: evaluations.total_pages,
         id: evaluation.id,
-        wdpa_id: evaluation.protected_area.wdpa_id,
-        iso3: evaluation.protected_area.countries.pluck(:iso_3).sort,
+        wdpa_id: wdpa_id,
+        restricted: restricted,
+        iso3: iso3,
         methodology: evaluation.methodology,
         year: evaluation.year.to_s,
         url: evaluation.url,
         metadata_id: evaluation.metadata_id,
         source_id: evaluation.pame_source.id,
         name: evaluation.protected_area.name,
-        designation: evaluation.protected_area.designation.name,
+        designation: designation,
         data_title: evaluation.pame_source.data_title,
         resp_party: evaluation.pame_source.resp_party,
         language: evaluation.pame_source.language,
@@ -227,7 +235,7 @@ class PameEvaluation < ApplicationRecord
         evaluation_attributes["evaluation_id"] = evaluation['id']
         evaluation_attributes["metadata_id"] = evaluation['metadata_id']
         evaluation_attributes["url"] = evaluation['url']
-        evaluation_attributes["year"] = evaluation['year']
+        evaluation_attributes["year"] = evaluation['evaluation_year']
         evaluation_attributes["methodology"] = evaluation['methodology']
         evaluation_attributes["wdpa_id"] = evaluation['wdpa_id']
         evaluation_attributes["iso_3"] = evaluation['countries']
