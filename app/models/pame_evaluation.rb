@@ -3,10 +3,11 @@ require 'csv'
 class PameEvaluation < ApplicationRecord
   belongs_to :protected_area
   belongs_to :pame_source
+  has_and_belongs_to_many :countries
 
   validates :methodology, :year, :protected_area, :metadata_id, :url, presence: true
 
-  RESTRICTED_WDPA_ID = ProtectedArea.restricted.id
+  # RESTRICTED_WDPA_ID = ProtectedArea.restricted.id
 
   TABLE_ATTRIBUTES = [
     {
@@ -117,11 +118,10 @@ class PameEvaluation < ApplicationRecord
 
   def self.serialise(evaluations)
     evaluations.to_a.map! do |evaluation|
-      wdpa_id = evaluation.protected_area.wdpa_id
-      restricted = wdpa_id == RESTRICTED_WDPA_ID ? true : false
-      designation = evaluation.protected_area.designation&.name || "N/A"
-      iso3 = evaluation.protected_area.countries.pluck(:iso_3).sort
-      iso3 = iso3 == [] ? ["Restricted"] : iso3
+      wdpa_id = evaluation.protected_area&.wdpa_id || nil
+      designation = evaluation.protected_area&.designation&.name || "N/A"
+      countries = evaluation.protected_area&.countries || evaluation.countries
+      iso3 = countries.pluck(:iso_3).sort
       {
         current_page: evaluations.current_page,
         per_page: evaluations.per_page,
@@ -129,19 +129,19 @@ class PameEvaluation < ApplicationRecord
         total_pages: evaluations.total_pages,
         id: evaluation.id,
         wdpa_id: wdpa_id,
-        restricted: restricted,
+        restricted: evaluation.restricted,
         iso3: iso3,
         methodology: evaluation.methodology,
         year: evaluation.year.to_s,
         url: evaluation.url,
         metadata_id: evaluation.metadata_id,
-        source_id: evaluation.pame_source.id,
-        name: evaluation.protected_area.name,
+        source_id: evaluation.pame_source&.id,
+        name: evaluation.protected_area&.name,
         designation: designation,
-        data_title: evaluation.pame_source.data_title,
-        resp_party: evaluation.pame_source.resp_party,
-        language: evaluation.pame_source.language,
-        source_year: evaluation.pame_source.year
+        data_title: evaluation.pame_source&.data_title,
+        resp_party: evaluation.pame_source&.resp_party,
+        language: evaluation.pame_source&.language,
+        source_year: evaluation.pame_source&.year
       }
     end
   end

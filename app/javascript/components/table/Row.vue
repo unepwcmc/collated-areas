@@ -2,7 +2,7 @@
 <tr>
     <td>{{ item.name }}</td>
     <td>{{ item.designation }}</td>
-    <td><a :href="wdpaUrl(item.wdpa_id)" title="View protected area on Protected Planet" target="_blank">{{ item.wdpa_id }}</a></td>
+    <td><a :href="wdpaUrl(item.wdpa_id, item.restricted)" title="View protected area on Protected Planet" target="_blank">{{ item.wdpa_id }}</a></td>
     <td>{{ item.id }}</td>
     <td>{{ checkForMultiples('iso3') }}</td>
     <td>{{ item.methodology }}</td>
@@ -31,8 +31,8 @@
     },
 
     methods: {
-      wdpaUrl (wdpaId) {
-        return 'https://protectedplanet.net/' + wdpaId
+      wdpaUrl (wdpaId, restricted) {
+        restricted ? 'N/A' : `https://protectedplanet.net/${wdpaId}`
       },
 
       assessmentUrl (url) {
@@ -52,9 +52,12 @@
       },
 
       checkForMultiples (field) {
+        console.log(field)
         // set output to the first item in the array
         // if the array has more than 1 value then set output to 'multiple'
         let output = this.item[field][0]
+        console.log(output)
+        console.log("this.item[field]: " + this.item[field])
 
         if(this.item[field].length > 1) {
           output = 'Multiple'
