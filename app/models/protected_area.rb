@@ -7,8 +7,4 @@ class ProtectedArea < ActiveRecord::Base
 
   belongs_to :designation
   delegate :jurisdiction, to: :designation, allow_nil: true
-
-  def self.restricted
-    where(name: "Restricted").first
-  end
 end
