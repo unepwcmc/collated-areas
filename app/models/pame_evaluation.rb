@@ -20,7 +20,8 @@ class PameEvaluation < ApplicationRecord
     },
     {
       title: 'WDPA ID',
-      field: 'wdpa_id'
+      field: 'wdpa_id',
+      tooltip: 'Unrestricted Protected Areas can be viewed on Protected Planet'
     },
     {
       title: 'Assessment ID',
