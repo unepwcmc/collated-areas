@@ -6,7 +6,11 @@ RSpec.feature "Filters", type: :feature do
       visit root_path
       #click_on(class: "filter__button button filter__button--active")
       #check('usa')
-      find('.filter').click
+      #save_screenshot
+      find('.filter', text: 'Country').click
+      save_screenshot
+      #find('.filter__checkbox', text: 'USA').check
+      #check('usa')
       #click('Apply')
       #expect(page).to have_content('USA')
       #expect(page).to_not have_content('JPN')
