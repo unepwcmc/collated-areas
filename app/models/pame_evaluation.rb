@@ -187,8 +187,9 @@ class PameEvaluation < ApplicationRecord
     ].to_json
   end
 
-  def self.generate_csv(where_statement)
+  def self.generate_csv(where_statement, restricted_where_statement)
     where_statement = where_statement.empty? ? '' : "WHERE #{where_statement}"
+    restricted_where_statement = restricted_where_statement.empty? ? '' : "WHERE #{restricted_where_statement}"
     query = <<-SQL
       SELECT e.id AS id,
              e.metadata_id AS metadata_id,
@@ -211,6 +212,29 @@ class PameEvaluation < ApplicationRecord
              INNER JOIN designations ON protected_areas.designation_id = designations.id
              #{where_statement}
              GROUP BY e.id, protected_areas.wdpa_id, protected_areas.name, designation, pame_sources.data_title,
+                      pame_sources.resp_party, pame_sources.year, pame_sources.language
+
+             UNION
+
+      SELECT e.id AS id,
+             e.metadata_id AS metadata_id,
+             e.url AS url,
+             e.year AS evaluation_year,
+             e.methodology AS methodology,
+             0 AS wdpa_id,
+             ARRAY_TO_STRING(ARRAY_AGG(countries.iso_3),';') AS countries,
+             NULL AS site_name,
+             NULL AS designation,
+             pame_sources.data_title AS data_title,
+             pame_sources.resp_party AS resp_party,
+             pame_sources.year AS source_year,
+             pame_sources.language AS language
+             FROM pame_evaluations e
+             INNER JOIN pame_sources ON e.pame_source_id = pame_sources.id
+             INNER JOIN countries_pame_evaluations ON e.id = countries_pame_evaluations.pame_evaluation_id
+             INNER JOIN countries ON countries_pame_evaluations.country_id = countries.id
+             #{restricted_where_statement}
+             GROUP BY e.id, wdpa_id, site_name, designation, pame_sources.data_title,
                       pame_sources.resp_party, pame_sources.year, pame_sources.language;
     SQL
     evaluations = ActiveRecord::Base.connection.execute(query)
@@ -259,18 +283,20 @@ class PameEvaluation < ApplicationRecord
     filter_params = json_params["_json"].nil? ? nil : json_params["_json"]
 
     where_statement = []
+    restricted_where_statement = []
     where_params = parse_filters(filter_params)
     where_params.map do |k, v|
       where_statement << where_fields(k,v) unless v.nil?
+      restricted_where_statement << where_fields(k,v) if !v.nil? && k != :sites
     end
 
     where_statement = where_statement.join(' AND ')
-    generate_csv(where_statement)
+    restricted_where_statement = restricted_where_statement.join(' AND ')
+    generate_csv(where_statement, restricted_where_statement)
   end
 
   def self.where_fields(k,v)
     return "e.#{v}" if [:year, :sites].include? (k)
     return v
-    generate_csv(where_params)
   end
 end
