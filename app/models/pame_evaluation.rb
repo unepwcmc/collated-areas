@@ -206,7 +206,7 @@ class PameEvaluation < ApplicationRecord
              pame_sources.language AS language
              FROM pame_evaluations e
              INNER JOIN protected_areas ON e.protected_area_id = protected_areas.id
-             INNER JOIN pame_sources ON e.pame_source_id = pame_sources.id
+             LEFT JOIN pame_sources ON e.pame_source_id = pame_sources.id
              INNER JOIN countries_protected_areas ON protected_areas.id = countries_protected_areas.protected_area_id
              INNER JOIN countries ON countries_protected_areas.country_id = countries.id
              INNER JOIN designations ON protected_areas.designation_id = designations.id
