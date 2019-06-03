@@ -141,7 +141,8 @@ class PameEvaluation < ApplicationRecord
 
   def self.serialise(evaluations)
     evaluations.to_a.map! do |evaluation|
-      wdpa_id = evaluation.protected_area&.wdpa_id || nil
+      wdpa_id = evaluation.protected_area&.wdpa_id || evaluation.wdpa_id
+      name  = evaluation.protected_area&.name || evaluation.name
       designation = evaluation.protected_area&.designation&.name || "N/A"
       countries = evaluation.protected_area&.countries || evaluation.countries
       iso3 = countries.pluck(:iso_3).sort
@@ -159,7 +160,7 @@ class PameEvaluation < ApplicationRecord
         url: evaluation.url,
         metadata_id: evaluation.metadata_id,
         source_id: evaluation.pame_source&.id,
-        name: evaluation.protected_area&.name,
+        name: name,
         designation: designation,
         data_title: evaluation.pame_source&.data_title,
         resp_party: evaluation.pame_source&.resp_party,
