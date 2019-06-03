@@ -83,7 +83,8 @@ class PameEvaluation < ApplicationRecord
 
   def self.parse_filters(filters)
     site_ids = []
-    where_params = {sites: "", methodology: "", year: ""}
+    country_ids = []
+    where_params = {sites: "", methodology: "", year: "", iso3: ""}
     filters.each do |filter|
       options = filter["options"]
       case filter['name']
@@ -91,6 +92,8 @@ class PameEvaluation < ApplicationRecord
         countries = options
         site_ids << countries.map{ |iso3| Country.find_by(iso_3: iso3).protected_areas.pluck(:id) }
         where_params[:sites] = options.empty? ? nil : "protected_area_id IN (#{site_ids.join(',')})"
+        country_ids << countries.map{ |iso3| "(#{ Country.find_by(iso_3: iso3).id })" }
+        where_params[:iso3] = options.empty? ? nil : "countries.id IN #{country_ids.join(',')}"
       when 'methodology'
         options = options.map{ |e| "'#{e}'" }
         where_params[:methodology] = options.empty? ? nil : "#{filter["name"]} IN (#{options.join(',')})"
@@ -103,11 +106,12 @@ class PameEvaluation < ApplicationRecord
 
   def self.run_query(page, where_params)
     if where_params[:sites].present?
+      query = PameEvaluation.connection.unprepared_statement {
+        "((#{pame_evaluations_from_pa_query(where_params)}) UNION (#{pame_evaluations_from_countries_query(where_params)})) AS pame_evaluations"
+      }
+
       PameEvaluation
-      .joins(:protected_area)
-      .where(where_params[:sites])
-      .where(where_params[:methodology])
-      .where(where_params[:year])
+      .from(query)
       .paginate(page: page || 1, per_page: 100).order('id ASC')
     else
       PameEvaluation
@@ -115,6 +119,24 @@ class PameEvaluation < ApplicationRecord
       .where(where_params[:year])
       .paginate(page: page || 1, per_page: 100).order('id ASC')
     end
+  end
+
+  def self.pame_evaluations_from_pa_query(where_params)
+    PameEvaluation
+    .joins(:protected_area)
+    .where(where_params[:sites])
+    .where(where_params[:methodology])
+    .where(where_params[:year])
+    .to_sql
+  end
+
+  def self.pame_evaluations_from_countries_query(where_params)
+    PameEvaluation
+    .joins(:countries)
+    .where(where_params[:iso3])
+    .where(where_params[:methodology])
+    .where(where_params[:year])
+    .to_sql
   end
 
   def self.serialise(evaluations)
