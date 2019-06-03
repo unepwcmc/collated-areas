@@ -244,11 +244,11 @@ class PameEvaluation < ApplicationRecord
       evaluation_columns = PameEvaluation.new.attributes.keys
       evaluation_columns << "evaluation_id"
 
-      excluded_attributes = ["protected_area_id", "pame_source_id", "created_at", "updated_at", "id", "site_id", "source_id"]
+      excluded_attributes = ["protected_area_id", "pame_source_id", "created_at", "updated_at", "id", "site_id", "source_id", "restricted"]
 
       evaluation_columns.delete_if { |k, v| excluded_attributes.include? k }
 
-      additional_columns = ["wdpa_id", "iso3", "name", "designation", "source_data_title", "source_resp_party", "source_year", "source_language"]
+      additional_columns = ["wdpa_id", "iso3", "name", "designation", "source_data_title", "source_resp_party", "source_year", "source_language", "restricted"]
       evaluation_columns << additional_columns.map{ |e| "#{e}" }
 
       csv_line << evaluation_columns.flatten
@@ -270,6 +270,7 @@ class PameEvaluation < ApplicationRecord
         evaluation_attributes["source_resp_party"] = evaluation['resp_party']
         evaluation_attributes["source_year"] = evaluation['source_year']
         evaluation_attributes["source_language"] = evaluation['language']
+        evaluation_attributes["restricted"] = evaluation['wdpa_id'] == 0 ? "TRUE" : "FALSE"
 
         evaluation_attributes = evaluation_attributes.values.map{ |e| "#{e}" }
         csv_line << evaluation_attributes
