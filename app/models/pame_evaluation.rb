@@ -7,8 +7,6 @@ class PameEvaluation < ApplicationRecord
 
   validates :methodology, :year, :protected_area, :metadata_id, :url, presence: true
 
-  # RESTRICTED_WDPA_ID = ProtectedArea.restricted.id
-
   TABLE_ATTRIBUTES = [
     {
       title: 'Name',
