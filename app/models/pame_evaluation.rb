@@ -246,7 +246,7 @@ class PameEvaluation < ApplicationRecord
              e.methodology AS methodology,
              0 AS wdpa_id,
              ARRAY_TO_STRING(ARRAY_AGG(countries.iso_3),';') AS countries,
-             NULL AS site_name,
+             e.name AS site_name,
              NULL AS designation,
              pame_sources.data_title AS data_title,
              pame_sources.resp_party AS resp_party,
@@ -257,7 +257,7 @@ class PameEvaluation < ApplicationRecord
              INNER JOIN countries_pame_evaluations ON e.id = countries_pame_evaluations.pame_evaluation_id
              INNER JOIN countries ON countries_pame_evaluations.country_id = countries.id
              #{restricted_where_statement}
-             GROUP BY e.id, wdpa_id, site_name, designation, pame_sources.data_title,
+             GROUP BY e.id, wdpa_id, e.name, designation, pame_sources.data_title,
                       pame_sources.resp_party, pame_sources.year, pame_sources.language;
     SQL
     evaluations = ActiveRecord::Base.connection.execute(query)
@@ -271,7 +271,7 @@ class PameEvaluation < ApplicationRecord
 
       evaluation_columns.delete_if { |k, v| excluded_attributes.include? k }
 
-      additional_columns = ["wdpa_id", "iso3", "name", "designation", "source_data_title", "source_resp_party", "source_year", "source_language", "restricted"]
+      additional_columns = ["iso3", "designation", "source_data_title", "source_resp_party", "source_year", "source_language", "restricted"]
       evaluation_columns << additional_columns.map{ |e| "#{e}" }
 
       csv_line << evaluation_columns.flatten
@@ -282,13 +282,13 @@ class PameEvaluation < ApplicationRecord
 
         evaluation_attributes["evaluation_id"] = evaluation['id']
         evaluation_attributes["metadata_id"] = evaluation['metadata_id']
-        evaluation_attributes["url"] = evaluation['url']
+        evaluation_attributes["url"] = evaluation['url'] || "N/A"
         evaluation_attributes["year"] = evaluation['evaluation_year']
         evaluation_attributes["methodology"] = evaluation['methodology']
         evaluation_attributes["wdpa_id"] = evaluation['wdpa_id']
         evaluation_attributes["iso_3"] = evaluation['countries']
         evaluation_attributes["name"] = evaluation['site_name']
-        evaluation_attributes["designation"] = evaluation['designation']
+        evaluation_attributes["designation"] = evaluation['designation'] || "N/A"
         evaluation_attributes["source_data_title"] = evaluation['data_title']
         evaluation_attributes["source_resp_party"] = evaluation['resp_party']
         evaluation_attributes["source_year"] = evaluation['source_year']
