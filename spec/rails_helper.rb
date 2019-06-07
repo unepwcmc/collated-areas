@@ -80,6 +80,12 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 
   config.before(:each, type: :feature) do
-    Capybara.page.current_window.resize_to(1024, 1024)
+    Capybara.page.current_window.resize_to(1024, 2048)
   end
+
+  config.before(:suite) do
+    # Compile JavaScript
+    `bin/webpack`
+  end
+
 end

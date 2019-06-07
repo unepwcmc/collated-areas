@@ -5,8 +5,11 @@ RSpec.feature "Filters", type: :feature do
     scenario "by country" do
       visit root_path
       find('.filter', text: 'Country').click
+      #save_screenshot
       find('.filter__option', text: 'USA', visible: false).check
+      #save_screenshot
       click_on('Apply')
+      #save_screenshot
       expect(page).to have_content('USA')
       expect(page).to_not have_content('JPN')
     end
