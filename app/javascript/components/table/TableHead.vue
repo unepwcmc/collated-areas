@@ -1,7 +1,7 @@
 <template>
   <thead id="sticky" :class="{ 'table__head--stuck' : isSticky }">
     <tr>
-      <table-header v-for="filter in filters" :filter="filter"></table-header>
+      <table-header v-for="filter, index in filters" :filter="filter" :key="index"></table-header>
     </tr>
   </thead>
 </template>

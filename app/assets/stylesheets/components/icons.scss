@@ -1,0 +1,8 @@
+.icon {
+  &--info {
+    background-image: image-url('icons/info.svg');
+    width: rem-calc(18); height: rem-calc(18);
+
+    display: block;
+  }
+}
