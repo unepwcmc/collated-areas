@@ -5,6 +5,7 @@ require File.expand_path('../../config/environment', __FILE__)
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'rspec/rails'
+require 'support/factory_bot'
 #require 'webdrivers/chromedriver'
 require 'selenium/webdriver'
 
@@ -77,8 +78,6 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
-  config.include FactoryBot::Syntax::Methods
-
   config.before(:each, type: :feature) do
     Capybara.page.current_window.resize_to(1024, 2048)
   end

@@ -89,14 +89,14 @@ class PameEvaluation < ApplicationRecord
       when 'iso3'
         countries = options
         site_ids << countries.map{ |iso3| Country.find_by(iso_3: iso3).protected_areas.pluck(:id) }
-        where_params[:sites] = options.empty? ? nil : "protected_area_id IN (#{site_ids.join(',')})"
+        where_params[:sites] = site_ids.empty? ? nil : "protected_area_id IN (#{site_ids.join(',')})"
         country_ids << countries.map{ |iso3| "(#{ Country.find_by(iso_3: iso3).id })" }
-        where_params[:iso3] = options.empty? ? nil : "countries.id IN #{country_ids.join(',')}"
+        where_params[:iso3] = country_ids.empty? ? nil : "countries.id IN #{country_ids.join(',')}"
       when 'methodology'
         options = options.map{ |e| "'#{e}'" }
-        where_params[:methodology] = options.empty? ? nil : "#{filter["name"]} IN (#{options.join(',')})"
+        where_params[:methodology] = options.empty? ? nil : "methodology IN (#{options.join(',')})"
       when 'year'
-        where_params[:year] = options.empty? ? nil : "#{filter["name"]} IN (#{options.join(',')})"
+        where_params[:year] = options.empty? ? nil : "year IN (#{options.join(',')})"
       end
     end
     where_params
