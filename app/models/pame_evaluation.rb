@@ -55,6 +55,7 @@ class PameEvaluation < ApplicationRecord
 
     order = (order && ['ASC', 'DESC'].include?(order.upcase)) ? order : 'DESC'
     evaluations = generate_query(page, json_params["filters"])
+    evaluations = filter_visible(evaluations)
     items = serialise(evaluations)
     structure_data(page, items)
   end
@@ -259,6 +260,7 @@ class PameEvaluation < ApplicationRecord
                       pame_sources.resp_party, pame_sources.year, pame_sources.language;
     SQL
     evaluations = ActiveRecord::Base.connection.execute(query)
+    evaluations = filter_visible(evaluations)
 
     csv_string = CSV.generate(encoding: 'UTF-8') do |csv_line|
 
@@ -320,5 +322,14 @@ class PameEvaluation < ApplicationRecord
   def self.where_fields(k,v)
     return "e.#{v}" if [:year, :sites].include? (k)
     return v
+  end
+
+  def visible
+    return true if (protected_area.nil? && restricted) || protected_area.present?
+    return false
+  end
+
+  def self.filter_visible(evaluations)
+    evaluations.map{|pe| pe if pe.visible==true}.compact
   end
 end
