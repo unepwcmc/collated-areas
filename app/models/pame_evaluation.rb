@@ -71,7 +71,7 @@ class PameEvaluation < ApplicationRecord
 
   def self.generate_query(page, filter_params)
     # if params are empty then return the paginated results without filtering
-    return PameEvaluation.order('id ASC').paginate(page: page || 1, per_page: 100) if filter_params.empty?
+    return PameEvaluation.where(visible: true).order('id ASC').paginate(page: page || 1, per_page: 100) if filter_params.empty?
 
     filters = filter_params.select { |hash| hash["options"].present? }
 

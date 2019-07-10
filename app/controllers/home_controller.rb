@@ -18,7 +18,7 @@ class HomeController < ApplicationController
   end
 
   def list
-    @evaluations = PameEvaluation.paginate_evaluations(params.to_json)
+    @evaluations = PameEvaluation.where(visible: true).paginate_evaluations(params.to_json)
     render json: @evaluations
   end
 
