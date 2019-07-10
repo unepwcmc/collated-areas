@@ -60,24 +60,13 @@ class PameEvaluation < ApplicationRecord
   end
 
   def self.structure_data(page, items)
-    if items.count > 0
     {
       current_page: page,
       per_page: 100,
-      total_entries: items[0][:total_entries],
-      total_pages: items[0][:total_pages],
+      total_entries: (items.count > 0 ? items[0][:total_entries] : 0),
+      total_pages:   (items.count > 0 ? items[0][:total_pages] : 0),
       items: items
     }
-    else
-      {
-        current_page: page,
-        per_page: 100,
-        total_entries: 0,
-        total_pages: 0,
-        items: items
-    }
-
-    end
   end
 
   def self.generate_query(page, filter_params)

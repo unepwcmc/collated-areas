@@ -32,6 +32,7 @@ class PameEvaluationTest < ActiveSupport::TestCase
     assert_equal 2, result[:total_entries]
   end
 
+  
   test "hides single not-visible evaluation" do
     ps = FactoryGirl.create(:pame_source)
     pe = FactoryGirl.create(:pame_evaluation, restricted: false,  pame_source: ps)
