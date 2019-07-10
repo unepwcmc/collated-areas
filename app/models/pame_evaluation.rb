@@ -260,7 +260,6 @@ class PameEvaluation < ApplicationRecord
                       pame_sources.resp_party, pame_sources.year, pame_sources.language;
     SQL
     evaluations = ActiveRecord::Base.connection.execute(query)
-    #evaluations = filter_visible(evaluations)
 
     csv_string = CSV.generate(encoding: 'UTF-8') do |csv_line|
 
@@ -278,9 +277,6 @@ class PameEvaluation < ApplicationRecord
 
       evaluations.each do |evaluation|
         evaluation_attributes = PameEvaluation.new.attributes
-        restricted = evaluation['wdpa_id'] == 0 ? "TRUE" : "FALSE"
-        visible = ((evaluation_attributes["wdpa_id"].nil? && restricted) || evaluation_attributes["wdpa_id"].present?) ? true : false
-        next if !visible
 
         evaluation_attributes.delete_if { |k, v| excluded_attributes.include? k }
 
@@ -331,8 +327,4 @@ class PameEvaluation < ApplicationRecord
     return true if (protected_area.nil? && restricted) || protected_area.present?
     return false
   end
-
-  # def self.filter_visible(evaluations)
-  #   evaluations.map{|pe| pe if pe.visible==true}.compact
-  # end
 end
