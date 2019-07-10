@@ -260,18 +260,18 @@ class PameEvaluation < ApplicationRecord
                       pame_sources.resp_party, pame_sources.year, pame_sources.language;
     SQL
     evaluations = ActiveRecord::Base.connection.execute(query)
-    evaluations = filter_visible(evaluations)
+    #evaluations = filter_visible(evaluations)
 
     csv_string = CSV.generate(encoding: 'UTF-8') do |csv_line|
 
       evaluation_columns = PameEvaluation.new.attributes.keys
       evaluation_columns << "evaluation_id"
 
-      excluded_attributes = ["protected_area_id", "pame_source_id", "created_at", "updated_at", "id", "site_id", "source_id", "restricted"]
+      excluded_attributes = ["restricted", "protected_area_id", "pame_source_id", "created_at", "updated_at", "id", "site_id", "source_id"]
 
       evaluation_columns.delete_if { |k, v| excluded_attributes.include? k }
 
-      additional_columns = ["iso3", "designation", "source_data_title", "source_resp_party", "source_year", "source_language", "restricted"]
+      additional_columns = ["iso3", "designation", "source_data_title", "source_resp_party", "source_year", "source_language"]
       evaluation_columns << additional_columns.map{ |e| "#{e}" }
 
       csv_line << evaluation_columns.flatten
@@ -293,7 +293,6 @@ class PameEvaluation < ApplicationRecord
         evaluation_attributes["source_resp_party"] = evaluation['resp_party']
         evaluation_attributes["source_year"] = evaluation['source_year']
         evaluation_attributes["source_language"] = evaluation['language']
-        evaluation_attributes["restricted"] = evaluation['wdpa_id'] == 0 ? "TRUE" : "FALSE"
 
         evaluation_attributes = evaluation_attributes.values.map{ |e| "#{e}" }
         csv_line << evaluation_attributes
@@ -329,7 +328,7 @@ class PameEvaluation < ApplicationRecord
     return false
   end
 
-  def self.filter_visible(evaluations)
-    evaluations.map{|pe| pe if pe.visible==true}.compact
-  end
+  # def self.filter_visible(evaluations)
+  #   evaluations.map{|pe| pe if pe.visible==true}.compact
+  # end
 end
