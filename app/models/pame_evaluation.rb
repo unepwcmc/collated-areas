@@ -151,7 +151,7 @@ class PameEvaluation < ApplicationRecord
         total_pages: evaluations.total_pages,
         id: evaluation.id,
         wdpa_id: wdpa_id,
-        restricted: evaluation.restricted,
+#        restricted: evaluation.restricted,
         iso3: iso3,
         methodology: evaluation.methodology,
         year: evaluation.year.to_s,
