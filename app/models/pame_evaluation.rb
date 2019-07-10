@@ -322,9 +322,4 @@ class PameEvaluation < ApplicationRecord
     return "e.#{v}" if [:year, :sites].include? (k)
     return v
   end
-
-  def visible
-    return true if (protected_area.nil? && restricted) || protected_area.present?
-    return false
-  end
 end

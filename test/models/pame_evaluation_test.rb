@@ -16,7 +16,7 @@ class PameEvaluationTest < ActiveSupport::TestCase
   test "returns single visible evaluation" do
     pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
     ps = FactoryGirl.create(:pame_source)
-    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps)
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, visible: true)
     assert_equal true, pe.visible
     result = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS)
     assert_equal 1, result[:total_entries]
@@ -25,8 +25,8 @@ class PameEvaluationTest < ActiveSupport::TestCase
   test "returns two visible evaluations" do
     pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
     ps = FactoryGirl.create(:pame_source)
-    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps)
-    pe2 = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps)
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, visible: true)
+    pe2 = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, visible: true)
     assert_equal true, pe.visible
     result = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS)
     assert_equal 2, result[:total_entries]
@@ -41,5 +41,4 @@ class PameEvaluationTest < ActiveSupport::TestCase
     assert_equal 0, result[:total_entries]
   end
 
-  
 end
