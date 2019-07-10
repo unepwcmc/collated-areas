@@ -1,11 +1,11 @@
 require 'csv'
 
 class PameEvaluation < ApplicationRecord
-  belongs_to :protected_area
+  belongs_to :protected_area, optional: true
   belongs_to :pame_source
   has_and_belongs_to_many :countries
 
-  validates :methodology, :year, :protected_area, :metadata_id, :url, presence: true
+  validates :methodology, :year,:metadata_id, :url, presence: true
 
   TABLE_ATTRIBUTES = [
     {
@@ -55,19 +55,29 @@ class PameEvaluation < ApplicationRecord
 
     order = (order && ['ASC', 'DESC'].include?(order.upcase)) ? order : 'DESC'
     evaluations = generate_query(page, json_params["filters"])
-    evaluations = filter_visible(evaluations)
     items = serialise(evaluations)
     structure_data(page, items)
   end
 
   def self.structure_data(page, items)
+    if items.count > 0
     {
       current_page: page,
       per_page: 100,
-      total_entries: items.total_entries,
-      total_pages: items.total_pages,
+      total_entries: items[0][:total_entries],
+      total_pages: items[0][:total_pages],
       items: items
     }
+    else
+      {
+        current_page: page,
+        per_page: 100,
+        total_entries: 0,
+        total_pages: 0,
+        items: items
+    }
+
+    end
   end
 
   def self.generate_query(page, filter_params)
@@ -139,7 +149,8 @@ class PameEvaluation < ApplicationRecord
   end
 
   def self.serialise(evaluations)
-    evaluations.to_a.map! do |evaluation|
+    evaluations.select{|pe| pe.visible}.to_a.map! { |evaluation|
+      
       wdpa_id = evaluation.protected_area&.wdpa_id || evaluation.wdpa_id
       name  = evaluation.protected_area&.name || evaluation.name
       designation = evaluation.protected_area&.designation&.name || "N/A"
@@ -152,7 +163,7 @@ class PameEvaluation < ApplicationRecord
         total_pages: evaluations.total_pages,
         id: evaluation.id,
         wdpa_id: wdpa_id,
-#        restricted: evaluation.restricted,
+        restricted: evaluation.restricted,
         iso3: iso3,
         methodology: evaluation.methodology,
         year: evaluation.year.to_s,
@@ -166,7 +177,7 @@ class PameEvaluation < ApplicationRecord
         language: evaluation.pame_source&.language,
         source_year: evaluation.pame_source&.year
       }
-    end
+    }
   end
 
   def self.sources_to_json
