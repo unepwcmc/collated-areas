@@ -1,3 +1,10 @@
+### 0.1.5
+
+**Add restricted Protected Areas flag:**
+
+Add support for restricted PAME Evaluations.
+Improve test coverage.
+
 ### 0.1.4
 
 **Switch to using Protected Planet database:**

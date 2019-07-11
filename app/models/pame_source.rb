@@ -1,3 +1,3 @@
-class PameSource < ActiveRecord::Base
+class PameSource < ApplicationRecord
   has_many :pame_evaluations
 end

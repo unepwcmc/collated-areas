@@ -1,4 +1,4 @@
-class Country < ActiveRecord::Base
+class Country < ApplicationRecord
   has_and_belongs_to_many :protected_areas
 
   belongs_to :region
@@ -9,4 +9,6 @@ class Country < ActiveRecord::Base
 
   belongs_to :parent, class_name: "Country", foreign_key: :country_id
   has_many :children, class_name: "Country"
+
+  has_and_belongs_to_many :pame_evaluations
 end
