@@ -1,11 +1,11 @@
 require 'csv'
 
 class PameEvaluation < ApplicationRecord
-  belongs_to :protected_area
+  belongs_to :protected_area, optional: true
   belongs_to :pame_source
   has_and_belongs_to_many :countries
 
-  validates :methodology, :year, :protected_area, :metadata_id, :url, presence: true
+  validates :methodology, :year,:metadata_id, :url, presence: true
 
   TABLE_ATTRIBUTES = [
     {
@@ -63,15 +63,15 @@ class PameEvaluation < ApplicationRecord
     {
       current_page: page,
       per_page: 100,
-      total_entries: items.total_entries,
-      total_pages: items.total_pages,
+      total_entries: (items.count > 0 ? items[0][:total_entries] : 0),
+      total_pages:   (items.count > 0 ? items[0][:total_pages] : 0),
       items: items
     }
   end
 
   def self.generate_query(page, filter_params)
     # if params are empty then return the paginated results without filtering
-    return PameEvaluation.order('id ASC').paginate(page: page || 1, per_page: 100) if filter_params.empty?
+    return PameEvaluation.where(visible: true).order('id ASC').paginate(page: page || 1, per_page: 100) if filter_params.empty?
 
     filters = filter_params.select { |hash| hash["options"].present? }
 
@@ -138,7 +138,8 @@ class PameEvaluation < ApplicationRecord
   end
 
   def self.serialise(evaluations)
-    evaluations.to_a.map! do |evaluation|
+    evaluations.select{|pe| pe.visible}.to_a.map! { |evaluation|
+      
       wdpa_id = evaluation.protected_area&.wdpa_id || evaluation.wdpa_id
       name  = evaluation.protected_area&.name || evaluation.name
       designation = evaluation.protected_area&.designation&.name || "N/A"
@@ -165,7 +166,7 @@ class PameEvaluation < ApplicationRecord
         language: evaluation.pame_source&.language,
         source_year: evaluation.pame_source&.year
       }
-    end
+    }
   end
 
   def self.sources_to_json
@@ -265,17 +266,18 @@ class PameEvaluation < ApplicationRecord
       evaluation_columns = PameEvaluation.new.attributes.keys
       evaluation_columns << "evaluation_id"
 
-      excluded_attributes = ["protected_area_id", "pame_source_id", "created_at", "updated_at", "id", "site_id", "source_id", "restricted"]
+      excluded_attributes = ["visible", "restricted", "protected_area_id", "pame_source_id", "created_at", "updated_at", "id", "site_id", "source_id"]
 
       evaluation_columns.delete_if { |k, v| excluded_attributes.include? k }
 
-      additional_columns = ["iso3", "designation", "source_data_title", "source_resp_party", "source_year", "source_language", "restricted"]
+      additional_columns = ["iso3", "designation", "source_data_title", "source_resp_party", "source_year", "source_language"]
       evaluation_columns << additional_columns.map{ |e| "#{e}" }
 
       csv_line << evaluation_columns.flatten
 
       evaluations.each do |evaluation|
         evaluation_attributes = PameEvaluation.new.attributes
+
         evaluation_attributes.delete_if { |k, v| excluded_attributes.include? k }
 
         evaluation_attributes["evaluation_id"] = evaluation['id']
@@ -291,7 +293,6 @@ class PameEvaluation < ApplicationRecord
         evaluation_attributes["source_resp_party"] = evaluation['resp_party']
         evaluation_attributes["source_year"] = evaluation['source_year']
         evaluation_attributes["source_language"] = evaluation['language']
-        evaluation_attributes["restricted"] = evaluation['wdpa_id'] == 0 ? "TRUE" : "FALSE"
 
         evaluation_attributes = evaluation_attributes.values.map{ |e| "#{e}" }
         csv_line << evaluation_attributes
