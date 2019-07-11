@@ -6,7 +6,7 @@ class HomeController < ApplicationController
   }.to_json
 
   # Format for this date is: Month (3 letters) and Year (4 digits)
-  UPDATED_AT = "Jun 2019".freeze
+  UPDATED_AT = "June 2019".freeze
 
   def index
     @table_attributes = PameEvaluation::TABLE_ATTRIBUTES.to_json
@@ -18,7 +18,7 @@ class HomeController < ApplicationController
   end
 
   def list
-    @evaluations = PameEvaluation.paginate_evaluations(params.to_json)
+    @evaluations = PameEvaluation.where(visible: true).paginate_evaluations(params.to_json)
     render json: @evaluations
   end
 
