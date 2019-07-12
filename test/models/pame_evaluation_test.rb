@@ -41,4 +41,40 @@ class PameEvaluationTest < ActiveSupport::TestCase
     assert_equal 0, result[:total_entries]
   end
 
+  test "returns single restricted evaluation" do
+    pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
+    ps = FactoryGirl.create(:pame_source)
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, restricted: true)
+    assert_equal true, pe.restricted
+    result = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS)
+    assert_equal 1, result[:total_entries]
+  end
+
+  test "returns csv of single visible evaluation" do
+    pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
+    ps = FactoryGirl.create(:pame_source)
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, visible: true)
+    assert_equal true, pe.visible
+    result = PameEvaluation.to_csv(DEFAULT_PARAMS)
+    assert_equal 1, result[:total_entries]
+  end
+
+  test "returns csv of single restricted evaluation" do
+    pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
+    ps = FactoryGirl.create(:pame_source)
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, restricted: true)
+    assert_equal true, pe.restricted
+    result = PameEvaluation.to_csv(DEFAULT_PARAMS)
+    assert_equal 1, result[:total_entries]
+  end
+
+  test "returns csv without single not-visible evaluation" do
+    pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
+    ps = FactoryGirl.create(:pame_source)
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, visible: false)
+    assert_equal false, pe.visible
+    result = PameEvaluation.to_csv(DEFAULT_PARAMS)
+    assert_equal 1, result[:total_entries]
+  end
+
 end
