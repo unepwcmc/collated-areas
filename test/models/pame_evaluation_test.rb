@@ -56,7 +56,8 @@ class PameEvaluationTest < ActiveSupport::TestCase
     pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, visible: true)
     assert_equal true, pe.visible
     result = PameEvaluation.to_csv(DEFAULT_PARAMS)
-    assert_equal 1, result[:total_entries]
+    puts result
+    assert_equal 1, result
   end
 
   test "returns csv of single restricted evaluation" do
@@ -65,7 +66,8 @@ class PameEvaluationTest < ActiveSupport::TestCase
     pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, restricted: true)
     assert_equal true, pe.restricted
     result = PameEvaluation.to_csv(DEFAULT_PARAMS)
-    assert_equal 1, result[:total_entries]
+    puts result
+    assert_equal 1, result
   end
 
   test "returns csv without single not-visible evaluation" do
@@ -74,7 +76,9 @@ class PameEvaluationTest < ActiveSupport::TestCase
     pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, visible: false)
     assert_equal false, pe.visible
     result = PameEvaluation.to_csv(DEFAULT_PARAMS)
-    assert_equal 1, result[:total_entries]
+    puts result
+    assert_includes "methodology,year,metadata_id,url,wdpa_id,name,evaluation_id,iso3,designation,source_data_title,source_resp_party,source_year,source_language\n",
+                 result
   end
 
 end
