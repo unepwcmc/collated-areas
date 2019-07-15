@@ -4,7 +4,7 @@ class HomeController < ApplicationController
     requested_page: 1,
     filters: []
   }.to_json
-
+  
   # Format for this date is: Month (3 letters) and Year (4 digits)
   UPDATED_AT = "June 2019".freeze
 
@@ -29,6 +29,7 @@ class HomeController < ApplicationController
     #           filename: "protectedplanet-pame.csv" }
     # This needs to be uncommented once we have sorted out the CSV generation issue
     # The issue being that the CSV so large that it takes a long time to generate
+    byebug
     send_data PameEvaluation.to_csv(params.to_json), {
               type: "text/csv; charset=utf-8; header=present",
               disposition: "attachment",

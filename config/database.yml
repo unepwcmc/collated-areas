@@ -5,7 +5,8 @@ default: &default
   pool: 5
   timeout: 5000
   username: postgres
-  database: pp_development
+  password: postgres
+  database: protectedplanet-db
 
 development:
   <<: *default
