@@ -76,7 +76,7 @@ class PameEvaluationTest < ActiveSupport::TestCase
     pa = nil
     ps = FactoryGirl.create(:pame_source)
     pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps)
-    assert_equal false, pe.visible
+    assert_equal false, pe.protected_area_id.present?
     result = PameEvaluation.to_csv(DEFAULT_PARAMS)
     actual_csv = File.open('lib/data/seed/test_pame_returns_csv_without_single_not-visible_evaluation.csv').read
     assert_equal(result, actual_csv)
