@@ -121,26 +121,6 @@ class PameEvaluation < ApplicationRecord
     end.paginate(page: page || 1, per_page: 100).order('id ASC')
   end
 
-  # def self.pame_evaluations_with_pa_query(where_params)
-  #   PameEvaluation
-  #   .joins(:protected_area)
-  #   .where('protected_area_id IS NOT NULL')
-  #   .where(where_params[:sites])
-  #   .where(where_params[:methodology])
-  #   .where(where_params[:year])
-  #   .to_sql
-  # end
-
-  # def self.pame_evaluations_without_pa_query(where_params)
-  #   PameEvaluation
-  #   .joins(:countries)
-  #   .where('protected_area_id IS NOT NULL')
-  #   .where(where_params[:iso3])
-  #   .where(where_params[:methodology])
-  #   .where(where_params[:year])
-  #   .to_sql
-  # end
-
   def self.serialise(evaluations)
     evaluations.select{|pe| pe.protected_area}.to_a.map! { |evaluation|
       
@@ -214,8 +194,6 @@ class PameEvaluation < ApplicationRecord
   end
 
   def self.generate_csv(where_params)
-    #where_statement = where_statement.empty? ? '' : "WHERE #{where_statement}"
-
     if where_params[:sites].present?
       evaluations = PameEvaluation
       .joins(:protected_area)
@@ -231,10 +209,6 @@ class PameEvaluation < ApplicationRecord
       .where(where_params[:year])
       .includes(:pame_source, protected_area: [:designation, :countries])
     end
-
-    # evaluations = PameEvaluation.where('protected_area_id IS NOT NULL')
-    #                             .where(where_statement)
-
 
     csv_string = CSV.generate(encoding: 'UTF-8') do |csv_line|
 
@@ -280,20 +254,9 @@ class PameEvaluation < ApplicationRecord
     json_params = json.nil? ? nil : JSON.parse(json)
     filter_params = json_params["_json"].nil? ? nil : json_params["_json"]
 
-    # where_statement = []
     where_params = parse_filters(filter_params)
-    # where_params.map do |k, v|
-    #   where_statement << where_fields(k,v) unless v.nil?
-    # end
-
-    # where_statement = where_statement.join(' AND ')
     generate_csv(where_params)
   end
-
-  # def self.where_fields(k,v)
-  #   return "e.#{v}" if [:year, :sites].include? (k)
-  #   return v
-  # end
 end
 
 
