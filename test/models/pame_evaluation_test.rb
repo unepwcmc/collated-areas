@@ -68,7 +68,7 @@ class PameEvaluationTest < ActiveSupport::TestCase
     pe = FactoryGirl.create(:pame_evaluation, id: 1, protected_area: pa, pame_source: ps, restricted: true, wdpa_id: 1)
     assert_equal true, pe.restricted
     result = PameEvaluation.to_csv(DEFAULT_PARAMS)
-    actual_csv = File.open('lib/data/seed/test_pame_returns_csv_of_single_visible_evaluation.csv').read
+    actual_csv = File.open('lib/data/seed/test_pame_returns_csv_of_single_restricted_evaluation.csv').read
     assert_equal(result, actual_csv)
   end
 
