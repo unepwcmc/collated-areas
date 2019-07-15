@@ -60,25 +60,26 @@ class PameEvaluationTest < ActiveSupport::TestCase
     assert_equal(result, actual_csv)
   end
 
-  # test "returns csv of single restricted evaluation" do
-  #   pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
-  #   ps = FactoryGirl.create(:pame_source)
-  #   pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, restricted: true)
-  #   assert_equal true, pe.restricted
-  #   result = PameEvaluation.to_csv(DEFAULT_PARAMS)
-  #   puts result
-  #   assert_equal 1, result
-  # end
+  test "returns csv of single restricted evaluation" do
+    region = FactoryGirl.create(:region)
+    country = FactoryGirl.create(:country, name: "France", iso_3: "FRA", region: region)
+    pa = FactoryGirl.create(:protected_area, name: "Evaluated Area", countries: [country])
+    ps = FactoryGirl.create(:pame_source, data_title: "N/A", resp_party: "Unknown", year: 2016, language: "English")
+    pe = FactoryGirl.create(:pame_evaluation, id: 1, protected_area: pa, pame_source: ps, restricted: true, wdpa_id: 1)
+    assert_equal true, pe.restricted
+    result = PameEvaluation.to_csv(DEFAULT_PARAMS)
+    actual_csv = File.open('lib/data/seed/test_pame_returns_csv_of_single_visible_evaluation.csv').read
+    assert_equal(result, actual_csv)
+  end
 
-  # test "returns csv without single not-visible evaluation" do
-  #   pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
-  #   ps = FactoryGirl.create(:pame_source)
-  #   pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps)
-  #   assert_equal false, pe.visible
-  #   result = PameEvaluation.to_csv(DEFAULT_PARAMS)
-  #   puts result
-  #   assert_includes "methodology,year,metadata_id,url,wdpa_id,name,evaluation_id,iso3,designation,source_data_title,source_resp_party,source_year,source_language\n",
-  #                result
-  # end
+  test "returns csv without single not-visible evaluation" do
+    pa = nil
+    ps = FactoryGirl.create(:pame_source)
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps)
+    assert_equal false, pe.visible
+    result = PameEvaluation.to_csv(DEFAULT_PARAMS)
+    actual_csv = File.open('lib/data/seed/test_pame_returns_csv_without_single_not-visible_evaluation.csv').read
+    assert_equal(result, actual_csv)
+  end
 
 end
