@@ -7,7 +7,7 @@ class Country < ApplicationRecord
   has_many :sub_locations
   has_many :designations, -> { uniq }, through: :protected_areas
 
-  belongs_to :parent, class_name: "Country", foreign_key: :country_id
+  belongs_to :parent, class_name: "Country", foreign_key: :country_id, optional: true
   has_many :children, class_name: "Country"
 
   has_and_belongs_to_many :pame_evaluations

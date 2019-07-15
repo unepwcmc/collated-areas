@@ -49,15 +49,15 @@ class PameEvaluationTest < ActiveSupport::TestCase
 
   test "returns csv of single visible evaluation" do
     region = FactoryGirl.create(:region)
-    country = FactoryGirl.create(:country, name: "France", iso_3: "FRA", region: region, parent: 1)
+    country = FactoryGirl.create(:country, name: "France", iso_3: "FRA", region: region)
     pa = FactoryGirl.create(:protected_area, name: "Evaluated Area", countries: [country])
     ps = FactoryGirl.create(:pame_source, data_title: "N/A", resp_party: "Unknown", year: 2016, language: "English")
-    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, wdpa_id: 1)
+    pe = FactoryGirl.create(:pame_evaluation, id: 1, protected_area: pa, pame_source: ps, wdpa_id: 1)
     assert_equal pa, pe.protected_area
     assert_equal 1, pe.wdpa_id
     result = PameEvaluation.to_csv(DEFAULT_PARAMS)
-    puts result
-    assert_equal "TODO: ADD CSV OUTPUT", result
+    actual_csv = File.open('lib/data/seed/test_pame_returns_csv_of_single_visible_evaluation.csv').read
+    assert_equal(result, actual_csv)
   end
 
   # test "returns csv of single restricted evaluation" do
