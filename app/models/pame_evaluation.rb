@@ -223,12 +223,13 @@ class PameEvaluation < ApplicationRecord
       .where(where_params[:sites])
       .where(where_params[:methodology])
       .where(where_params[:year])
-      .includes(:pame_source, protected_area: [:designation])
+      .includes(:pame_source, protected_area: [:designation, :countries])
     else
       evaluations = PameEvaluation
+      .joins(:protected_area)
       .where(where_params[:methodology])
       .where(where_params[:year])
-      .includes(:pame_source, protected_area: [:designation])
+      .includes(:pame_source, protected_area: [:designation, :countries])
     end
 
     # evaluations = PameEvaluation.where('protected_area_id IS NOT NULL')
@@ -260,9 +261,9 @@ class PameEvaluation < ApplicationRecord
         evaluation_attributes["year"] = evaluation.year
         evaluation_attributes["methodology"] = evaluation.methodology
         evaluation_attributes["wdpa_id"] = evaluation.wdpa_id
-        evaluation_attributes["iso_3"] = evaluation.countries.map{ |c| c.iso_3 }.join(",")
+        evaluation_attributes["iso_3"] = evaluation.protected_area.countries.map(&:iso_3).join(",")
         evaluation_attributes["name"] = evaluation.protected_area.name
-        evaluation_attributes["designation"] = evaluation.protected_area.designation.name || "N/A"
+        evaluation_attributes["designation"] = evaluation.protected_area.designation&.name || "N/A"
         evaluation_attributes["source_data_title"] = evaluation.pame_source.data_title
         evaluation_attributes["source_resp_party"] = evaluation.pame_source.resp_party
         evaluation_attributes["source_year"] = evaluation.pame_source.year

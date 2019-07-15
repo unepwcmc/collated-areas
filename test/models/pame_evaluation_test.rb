@@ -15,8 +15,7 @@ class PameEvaluationTest < ActiveSupport::TestCase
   test "returns single visible evaluation" do
     pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
     ps = FactoryGirl.create(:pame_source)
-    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, visible: true)
-    assert_equal true, pe.visible
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps)
     result = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS)
     assert_equal 1, result[:total_entries]
   end
@@ -24,9 +23,8 @@ class PameEvaluationTest < ActiveSupport::TestCase
   test "returns two visible evaluations" do
     pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
     ps = FactoryGirl.create(:pame_source)
-    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, visible: true)
-    pe2 = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, visible: true)
-    assert_equal true, pe.visible
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps)
+    pe2 = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps)
     result = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS)
     assert_equal 2, result[:total_entries]
   end
@@ -34,7 +32,7 @@ class PameEvaluationTest < ActiveSupport::TestCase
   
   test "hides single not-visible evaluation" do
     ps = FactoryGirl.create(:pame_source)
-    pe = FactoryGirl.create(:pame_evaluation, restricted: false,  pame_source: ps)
+    pe = FactoryGirl.create(:pame_evaluation, pame_source: ps, protected_area: nil)
     assert_equal false, pe.visible
     result = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS)
     assert_equal 0, result[:total_entries]
@@ -54,7 +52,7 @@ class PameEvaluationTest < ActiveSupport::TestCase
   test "returns csv of single visible evaluation" do
     pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
     ps = FactoryGirl.create(:pame_source)
-    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, visible: true, wdpa_id: 1)
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, wdpa_id: 1)
     assert_equal true, pe.visible
     assert_equal 1, pe.wdpa_id
     result = PameEvaluation.to_csv(DEFAULT_PARAMS)
@@ -77,7 +75,7 @@ class PameEvaluationTest < ActiveSupport::TestCase
     #skip("This works")
     pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
     ps = FactoryGirl.create(:pame_source)
-    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, visible: false)
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps)
     assert_equal false, pe.visible
     result = PameEvaluation.to_csv(DEFAULT_PARAMS)
     puts result
