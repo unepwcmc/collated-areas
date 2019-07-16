@@ -82,7 +82,7 @@ class PameEvaluation < ApplicationRecord
   def self.parse_filters(filters)
     site_ids = []
     country_ids = []
-    where_params = {sites: "", methodology: "", year: "", iso3: ""}
+    where_params = {sites: "", methodology: "", year: ""}
     if filters.nil?
       {}
     else
@@ -93,8 +93,6 @@ class PameEvaluation < ApplicationRecord
           countries = options
           site_ids << countries.map{ |iso3| Country.find_by(iso_3: iso3).protected_areas.pluck(:id) }
           where_params[:sites] = site_ids.flatten.empty? ? nil : "protected_area_id IN (#{site_ids.join(',')})"
-          country_ids << countries.map{ |iso3| "#{ Country.find_by(iso_3: iso3).id }" }
-          where_params[:iso3] = country_ids.flatten.empty? ? nil : "countries.id IN (#{country_ids.join(',')})"
         when 'methodology'
           options = options.map{ |e| "'#{e}'" }
           where_params[:methodology] = options.empty? ? nil : "methodology IN (#{options.join(',')})"
@@ -122,7 +120,7 @@ class PameEvaluation < ApplicationRecord
   end
 
   def self.serialise(evaluations)
-    evaluations.select{|pe| pe.protected_area}.to_a.map! { |evaluation|
+    evaluations.select{|pe| pe.protected_area}.to_a.map! do |evaluation|
       
       wdpa_id = evaluation.protected_area&.wdpa_id || evaluation.wdpa_id
       name  = evaluation.protected_area&.name || evaluation.name
@@ -150,7 +148,7 @@ class PameEvaluation < ApplicationRecord
         language: evaluation.pame_source&.language,
         source_year: evaluation.pame_source&.year
       }
-    }
+    end
   end
 
   def self.sources_to_json
