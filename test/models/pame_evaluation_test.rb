@@ -82,4 +82,42 @@ class PameEvaluationTest < ActiveSupport::TestCase
     assert_equal(result, actual_csv)
   end
 
+  test "returns a link when assessment_is_public is true and url has a url" do
+    pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
+    ps = FactoryGirl.create(:pame_source)
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, assessment_is_public: true)
+    result = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS)
+    puts result
+    assert_equal 1, result[:total_entries]
+  end
+
+  test "returns not currently public when assessment_is_public is true and url is blank" do
+    skip("skip")
+  end
+
+  test "returns not reported when assessment_is_public is false and url is blank nothing" do
+    skip("skip")
+  end
+
+  test "returns not reported when assessment_is_public is false and url has a url" do
+    skip("skip")
+  end
+
+  test "csv returns a link when assessment_is_public is true and url has a url" do
+    skip("skip")
+  end
+
+  test "csv returns not currently public when assessment_is_public is true and url is blank" do
+    skip("skip")
+  end
+  
+  test "csv returns not reported when assessment_is_public is false and url is blank nothing" do
+    skip("skip")
+  end
+
+  test "csv returns not reported when assessment_is_public is false and url has a url" do
+    skip("skip")
+  end  
+
+
 end
