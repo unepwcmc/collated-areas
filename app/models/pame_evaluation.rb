@@ -223,7 +223,6 @@ class PameEvaluation < ApplicationRecord
       .where(where_params[:methodology])
       .where(where_params[:year])
       .to_sql
-      byebug
     end
 
     evaluations = ActiveRecord::Base.connection.execute(query)
