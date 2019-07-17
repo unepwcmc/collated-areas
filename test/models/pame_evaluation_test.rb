@@ -138,16 +138,16 @@ class PameEvaluationTest < ActiveSupport::TestCase
 
   end
   
-  # test "csv returns not reported when assessment_is_public is false and url is blank" do
-  #   region = FactoryGirl.create(:region)
-  #   country = FactoryGirl.create(:country, name: "France", iso_3: "FRA", region: region)
-  #   pa = FactoryGirl.create(:protected_area, name: "Evaluated Area", countries: [country])
-  #   ps = FactoryGirl.create(:pame_source, data_title: "N/A", resp_party: "Unknown", year: 2016, language: "English")
-  #   pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, url: "", assessment_is_public: false)
-  #   actual_csv = File.open('lib/data/seed/test_pame_csv_returns_not_reported_when_assessment_is_public_is _false_and_url_is_blank.csv').read
-  #   result = PameEvaluation.to_csv(DEFAULT_PARAMS)
-  #   assert_equal(result, actual_csv)    
-  # end
+  test "csv returns not reported when assessment_is_public is false and url is blank" do
+    region = FactoryGirl.create(:region)
+    country = FactoryGirl.create(:country, name: "France", iso_3: "FRA", region: region)
+    pa = FactoryGirl.create(:protected_area, name: "Evaluated Area", countries: [country])
+    ps = FactoryGirl.create(:pame_source, data_title: "N/A", resp_party: "Unknown", year: 2016, language: "English")
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, url: "", assessment_is_public: false)
+    actual_csv = File.open('lib/data/seed/test_pame_csv_returns_not_reported_when_assessment_is_public_is_false_and_url_is_blank.csv').read
+    result = PameEvaluation.to_csv(DEFAULT_PARAMS)
+    assert_equal(result, actual_csv)    
+  end
 
   test "csv returns not reported when assessment_is_public is false and url has a url" do
     skip("skip")
