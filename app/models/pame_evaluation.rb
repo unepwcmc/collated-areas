@@ -191,16 +191,20 @@ class PameEvaluation < ApplicationRecord
     ].to_json
   end
 
-  def self.generate_csv(where_params)
-    if where_params[:sites].present?
-      query = PameEvaluation
-      .select('pame_evaluations.id AS id', 'pame_evaluations.metadata_id AS metadata_id',
+SELECT_STATEMENT = [
+  'pame_evaluations.id AS id', 'pame_evaluations.metadata_id AS metadata_id',
       'pame_evaluations.url AS url', 'pame_evaluations.year AS year',
       'pame_evaluations.methodology AS methodology', 'pame_evaluations.wdpa_id AS wdpa_id',
       'pame_sources.data_title AS source_data_title', 'pame_sources.resp_party AS source_resp_party',
       'pame_sources.year AS source_year', 'pame_sources.language AS source_language',
       'pame_evaluations.protected_area_id AS protectedarea_id', 'protected_areas.name AS protected_area_name',
-      'designations.name AS designation', 'countries.iso_3 AS iso3')
+      'designations.name AS designation', 'countries.iso_3 AS iso3'
+]
+
+  def self.generate_csv(where_params)
+    if where_params[:sites].present?
+      query = PameEvaluation
+      .select(SELECT_STATEMENT)
       .inner_join(protected_area: [:countries, :designation])
       .joins(:pame_source)
       .where('pame_evaluations.protected_area_id IS NOT NULL')
@@ -210,13 +214,7 @@ class PameEvaluation < ApplicationRecord
       .to_sql
     else
       query = PameEvaluation
-      .select('pame_evaluations.id AS id', 'pame_evaluations.metadata_id AS metadata_id',
-      'pame_evaluations.url AS url', 'pame_evaluations.year AS year',
-      'pame_evaluations.methodology AS methodology', 'pame_evaluations.wdpa_id AS wdpa_id',
-      'pame_sources.data_title AS source_data_title', 'pame_sources.resp_party AS source_resp_party',
-      'pame_sources.year AS source_year', 'pame_sources.language AS source_language',
-      'pame_evaluations.protected_area_id AS protectedarea_id', 'protected_areas.name AS protected_area_name',
-      'designations.name AS designation', 'countries.iso_3 AS iso3')
+      .select(SELECT_STATEMENT)
       .joins(protected_area: [:designation, :countries])
       .joins(:pame_source)
       .where('pame_evaluations.protected_area_id IS NOT NULL')
