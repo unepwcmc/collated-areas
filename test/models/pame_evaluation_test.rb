@@ -107,7 +107,11 @@ class PameEvaluationTest < ActiveSupport::TestCase
   end
 
   test "returns not reported when assessment_is_public is false and url has a url" do
-    skip("skip")
+    pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
+    ps = FactoryGirl.create(:pame_source)
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, url: "https://wcmc.io", assessment_is_public: false)
+    result = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS)
+    assert_equal "Not reported", result[:items].first[:url]
   end
 
   test "csv returns a link when assessment_is_public is true and url has a url" do
