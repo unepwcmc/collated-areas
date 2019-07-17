@@ -123,6 +123,12 @@ class PameEvaluation < ApplicationRecord
 
   def self.serialise(evaluations)
     evaluations.select{|pe| pe.protected_area}.to_a.map! { |evaluation|
+
+      if evaluation.assessment_is_public
+        url = evaluation.url.blank? ? "Not currently public" : evaluation.url
+      else
+        url = "Not reported"
+      end
       
       wdpa_id = evaluation.protected_area&.wdpa_id || evaluation.wdpa_id
       name  = evaluation.protected_area&.name || evaluation.name
@@ -140,7 +146,7 @@ class PameEvaluation < ApplicationRecord
         iso3: iso3,
         methodology: evaluation.methodology,
         year: evaluation.year.to_s,
-        url: evaluation.url,
+        url: url,
         metadata_id: evaluation.metadata_id,
         source_id: evaluation.pame_source&.id,
         name: name,
