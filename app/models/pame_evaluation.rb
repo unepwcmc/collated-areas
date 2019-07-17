@@ -5,7 +5,7 @@ class PameEvaluation < ApplicationRecord
   belongs_to :pame_source
   has_and_belongs_to_many :countries
 
-  validates :methodology, :year,:metadata_id, :url, presence: true
+  validates :methodology, :year, :metadata_id, presence: true
 
   TABLE_ATTRIBUTES = [
     {
