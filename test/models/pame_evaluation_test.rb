@@ -91,7 +91,11 @@ class PameEvaluationTest < ActiveSupport::TestCase
   end
 
   test "returns not currently public when assessment_is_public is true and url is blank" do
-    skip("skip")
+    pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
+    ps = FactoryGirl.create(:pame_source)
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, url: "", assessment_is_public: true)
+    result = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS)
+    assert_equal "Not currently public",  result[:items].first[:url]
   end
 
   test "returns not reported when assessment_is_public is false and url is blank nothing" do
