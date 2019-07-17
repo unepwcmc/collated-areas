@@ -235,9 +235,15 @@ class PameEvaluation < ApplicationRecord
 
         evaluation_attributes.delete_if { |k, v| excluded_attributes.include? k }
 
+        if evaluation["assessment_is_public"]
+          url = evaluation["url"].blank? ? "Not currently public" : evaluation["url"]
+        else
+          url = "Not reported"
+        end
+
         evaluation_attributes["evaluation_id"] = evaluation.id
         evaluation_attributes["metadata_id"] = evaluation.metadata_id
-        evaluation_attributes["url"] = evaluation.url || "N/A"
+        evaluation_attributes["url"] = url
         evaluation_attributes["year"] = evaluation.year
         evaluation_attributes["methodology"] = evaluation.methodology
         evaluation_attributes["wdpa_id"] = evaluation.wdpa_id
