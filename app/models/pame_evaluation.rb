@@ -193,7 +193,7 @@ class PameEvaluation < ApplicationRecord
   end
 
 SELECT_STATEMENT = [
-    'pame_evaluations.id AS id', 'pame_evaluations.metadata_id AS metadata_id',
+    'DISTINCT pame_evaluations.id AS id', 'pame_evaluations.metadata_id AS metadata_id',
     'pame_evaluations.url AS url', 'pame_evaluations.year AS year',
     'pame_evaluations.methodology AS methodology', 'pame_evaluations.wdpa_id AS wdpa_id',
     'pame_sources.data_title AS source_data_title', 'pame_sources.resp_party AS source_resp_party',
@@ -212,7 +212,6 @@ SELECT_STATEMENT = [
       .where(where_params[:sites])
       .where(where_params[:methodology])
       .where(where_params[:year])
-      .distinct
       .to_sql
     else
       query = PameEvaluation
@@ -222,7 +221,6 @@ SELECT_STATEMENT = [
       .where('pame_evaluations.protected_area_id IS NOT NULL')
       .where(where_params[:methodology])
       .where(where_params[:year])
-      .distinct
       .to_sql
     end
 
