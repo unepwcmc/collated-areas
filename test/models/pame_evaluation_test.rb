@@ -98,8 +98,12 @@ class PameEvaluationTest < ActiveSupport::TestCase
     assert_equal "Not currently public",  result[:items].first[:url]
   end
 
-  test "returns not reported when assessment_is_public is false and url is blank nothing" do
-    skip("skip")
+  test "returns not reported when assessment_is_public is false and url is blank" do
+    pa = FactoryGirl.create(:protected_area, name: "Evaluated Area")
+    ps = FactoryGirl.create(:pame_source)
+    pe = FactoryGirl.create(:pame_evaluation, protected_area: pa, pame_source: ps, url: "", assessment_is_public: false)
+    result = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS)
+    assert_equal "Not reported", result[:items].first[:url]
   end
 
   test "returns not reported when assessment_is_public is false and url has a url" do
@@ -122,7 +126,7 @@ class PameEvaluationTest < ActiveSupport::TestCase
     skip("skip")
   end
   
-  test "csv returns not reported when assessment_is_public is false and url is blank nothing" do
+  test "csv returns not reported when assessment_is_public is false and url is blank" do
     skip("skip")
   end
 
