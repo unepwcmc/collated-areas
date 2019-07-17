@@ -92,12 +92,12 @@ class PameEvaluation < ApplicationRecord
         when 'iso3'
           countries = options
           site_ids << countries.map{ |iso3| Country.find_by(iso_3: iso3).protected_areas.pluck(:id) }
-          where_params[:sites] = site_ids.flatten.empty? ? nil : "protected_area_id IN (#{site_ids.join(',')})"
+          where_params[:sites] = site_ids.flatten.empty? ? nil : "pame_evaluations.protected_area_id IN (#{site_ids.join(',')})"
         when 'methodology'
           options = options.map{ |e| "'#{e}'" }
-          where_params[:methodology] = options.empty? ? nil : "methodology IN (#{options.join(',')})"
+          where_params[:methodology] = options.empty? ? nil : "pame_evaluations.methodology IN (#{options.join(',')})"
         when 'year'
-          where_params[:year] = options.empty? ? nil : "year IN (#{options.join(',')})"
+          where_params[:year] = options.empty? ? nil : "pame_evaluations.year IN (#{options.join(',')})"
         end
       end
       where_params
@@ -192,38 +192,42 @@ class PameEvaluation < ApplicationRecord
   end
 
 SELECT_STATEMENT = [
-  'pame_evaluations.id AS id', 'pame_evaluations.metadata_id AS metadata_id',
-      'pame_evaluations.url AS url', 'pame_evaluations.year AS year',
-      'pame_evaluations.methodology AS methodology', 'pame_evaluations.wdpa_id AS wdpa_id',
-      'pame_sources.data_title AS source_data_title', 'pame_sources.resp_party AS source_resp_party',
-      'pame_sources.year AS source_year', 'pame_sources.language AS source_language',
-      'pame_evaluations.protected_area_id AS protectedarea_id', 'protected_areas.name AS protected_area_name',
-      'designations.name AS designation', 'countries.iso_3 AS iso3'
-]
+    'pame_evaluations.id AS id', 'pame_evaluations.metadata_id AS metadata_id',
+    'pame_evaluations.url AS url', 'pame_evaluations.year AS year',
+    'pame_evaluations.methodology AS methodology', 'pame_evaluations.wdpa_id AS wdpa_id',
+    'pame_sources.data_title AS source_data_title', 'pame_sources.resp_party AS source_resp_party',
+    'pame_sources.year AS source_year', 'pame_sources.language AS source_language',
+    'pame_evaluations.protected_area_id AS protectedarea_id', 'protected_areas.name AS protected_area_name',
+    'designations.name AS designation', 'countries.iso_3 AS iso3'
+  ]
 
   def self.generate_csv(where_params)
     if where_params[:sites].present?
       query = PameEvaluation
       .select(SELECT_STATEMENT)
-      .inner_join(protected_area: [:countries, :designation])
-      .joins(:pame_source)
+      .joins(protected_area: [:countries, :designation])
+      .left_joins(:pame_source)
       .where('pame_evaluations.protected_area_id IS NOT NULL')
       .where(where_params[:sites])
       .where(where_params[:methodology])
       .where(where_params[:year])
+      .distinct
       .to_sql
     else
       query = PameEvaluation
       .select(SELECT_STATEMENT)
-      .joins(protected_area: [:designation, :countries])
-      .joins(:pame_source)
+      .joins(protected_area: [:countries, :designation])
+      .left_joins(:pame_source)
       .where('pame_evaluations.protected_area_id IS NOT NULL')
       .where(where_params[:methodology])
       .where(where_params[:year])
+      .distinct
       .to_sql
     end
 
     evaluations = ActiveRecord::Base.connection.execute(query)
+
+    byebug
 
     csv_string = CSV.generate(encoding: 'UTF-8') do |csv_line|
 
