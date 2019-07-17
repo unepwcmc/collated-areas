@@ -18,7 +18,7 @@ class HomeController < ApplicationController
   end
 
   def list
-    @evaluations = PameEvaluation.where('protected_area_id IS NOT NULL').paginate_evaluations(params.to_json)
+    @evaluations = PameEvaluation.where('pame_evaluations.protected_area_id IS NOT NULL').paginate_evaluations(params.to_json)
     render json: @evaluations
   end
 

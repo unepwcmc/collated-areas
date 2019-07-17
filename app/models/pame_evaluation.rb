@@ -108,12 +108,13 @@ class PameEvaluation < ApplicationRecord
     if where_params[:sites].present?
       PameEvaluation
       .joins(:protected_area)
-      .where('protected_area_id IS NOT NULL')
+      .where('pame_evaluations.protected_area_id IS NOT NULL')
       .where(where_params[:sites])
       .where(where_params[:methodology])
       .where(where_params[:year])
     else
       PameEvaluation
+      .where('pame_evaluations.protected_area_id IS NOT NULL')
       .where(where_params[:methodology])
       .where(where_params[:year])
     end.paginate(page: page || 1, per_page: 100).order('id ASC')
@@ -226,8 +227,6 @@ SELECT_STATEMENT = [
     end
 
     evaluations = ActiveRecord::Base.connection.execute(query)
-
-    byebug
 
     csv_string = CSV.generate(encoding: 'UTF-8') do |csv_line|
 
