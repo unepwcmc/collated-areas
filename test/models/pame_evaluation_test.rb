@@ -159,6 +159,4 @@ class PameEvaluationTest < ActiveSupport::TestCase
     result = PameEvaluation.to_csv(DEFAULT_PARAMS)
     assert_equal(result, actual_csv) 
   end  
-
-
 end
