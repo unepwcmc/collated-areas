@@ -52,7 +52,7 @@ class PameEvaluationTest < ActiveSupport::TestCase
     country = FactoryGirl.create(:country, name: "France", iso_3: "FRA", region: region)
     pa = FactoryGirl.create(:protected_area, name: "Evaluated Area", countries: [country])
     ps = FactoryGirl.create(:pame_source, data_title: "N/A", resp_party: "Unknown", year: 2016, language: "English")
-    pe = FactoryGirl.create(:pame_evaluation, id: 1, protected_area: pa, pame_source: ps, wdpa_id: 1)
+    pe = FactoryGirl.create(:pame_evaluation, id: 1, protected_area: pa, pame_source: ps, wdpa_id: 1, assessment_is_public: true)
     assert_equal pa, pe.protected_area
     assert_equal 1, pe.wdpa_id
     result = PameEvaluation.to_csv(DEFAULT_PARAMS)
