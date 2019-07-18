@@ -200,10 +200,10 @@ SELECT_STATEMENT = [
     'pame_sources.year AS source_year', 'pame_sources.language AS source_language',
     'pame_evaluations.protected_area_id AS protected_area_id', 'protected_areas.name AS protected_area_name',
     'designations.name AS designation', 'ARRAY_TO_STRING(ARRAY_AGG(countries.iso_3),\';\') AS countries'
-  ]
+].freeze
 
 GROUP_BY = "pame_evaluations.id, protected_areas.wdpa_id, protected_areas.name, designation, pame_sources.data_title,
-            pame_sources.resp_party, pame_sources.year, pame_sources.language"
+            pame_sources.resp_party, pame_sources.year, pame_sources.language".freeze
 
   def self.generate_csv(where_params)
     if where_params[:sites].present?
