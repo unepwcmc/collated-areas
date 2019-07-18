@@ -193,34 +193,39 @@ class PameEvaluation < ApplicationRecord
   end
 
 SELECT_STATEMENT = [
-    'DISTINCT pame_evaluations.id AS id', 'pame_evaluations.metadata_id AS metadata_id',
+    'DISTINCT pame_evaluations.id AS assessment_id', 'pame_evaluations.metadata_id AS metadata_id',
     'pame_evaluations.url AS url', 'pame_evaluations.year AS year',
     'pame_evaluations.methodology AS methodology', 'pame_evaluations.wdpa_id AS wdpa_id',
     'pame_sources.data_title AS source_data_title', 'pame_sources.resp_party AS source_resp_party',
     'pame_sources.year AS source_year', 'pame_sources.language AS source_language',
-    'pame_evaluations.protected_area_id AS protectedarea_id', 'protected_areas.name AS protected_area_name',
-    'designations.name AS designation', 'countries.iso_3 AS iso3'
+    'pame_evaluations.protected_area_id AS protected_area_id', 'protected_areas.name AS protected_area_name',
+    'designations.name AS designation', 'ARRAY_TO_STRING(ARRAY_AGG(countries.iso_3),\';\') AS countries'
   ]
+
+GROUP_BY = "pame_evaluations.id, protected_areas.wdpa_id, protected_areas.name, designation, pame_sources.data_title,
+            pame_sources.resp_party, pame_sources.year, pame_sources.language"
 
   def self.generate_csv(where_params)
     if where_params[:sites].present?
       query = PameEvaluation
+      .where.not(protected_area_id: nil)
       .select(SELECT_STATEMENT)
-      .joins(protected_area: [:countries, :designation])
       .left_joins(:pame_source)
-      .where('pame_evaluations.protected_area_id IS NOT NULL')
+      .joins(protected_area: [:countries, :designation])
       .where(where_params[:sites])
       .where(where_params[:methodology])
       .where(where_params[:year])
+      .group(GROUP_BY)
       .to_sql
     else
       query = PameEvaluation
+      .where.not(protected_area_id: nil)
       .select(SELECT_STATEMENT)
-      .joins(protected_area: [:countries, :designation])
       .left_joins(:pame_source)
-      .where('pame_evaluations.protected_area_id IS NOT NULL')
+      .joins(protected_area: [:countries, :designation])
       .where(where_params[:methodology])
       .where(where_params[:year])
+      .group(GROUP_BY)
       .to_sql
     end
 
@@ -231,7 +236,7 @@ SELECT_STATEMENT = [
       evaluation_columns = PameEvaluation.new.attributes.keys
       evaluation_columns << "evaluation_id"
 
-      excluded_attributes = ["restricted", "protected_area_id", "pame_source_id", "created_at", "updated_at", "id", "site_id", "source_id"]
+      excluded_attributes = ["assessment_is_public", "restricted", "protected_area_id", "pame_source_id", "created_at", "updated_at", "id", "site_id", "source_id"]
 
       evaluation_columns.delete_if { |k, v| excluded_attributes.include? k }
 
@@ -245,13 +250,13 @@ SELECT_STATEMENT = [
 
         evaluation_attributes.delete_if { |k, v| excluded_attributes.include? k }
 
-        evaluation_attributes["evaluation_id"] = evaluation["id"]
+        evaluation_attributes["evaluation_id"] = evaluation["assessment_id"]
         evaluation_attributes["metadata_id"] = evaluation["metadata_id"]
         evaluation_attributes["url"] = evaluation["url"] || "N/A"
         evaluation_attributes["year"] = evaluation["year"]
         evaluation_attributes["methodology"] = evaluation["methodology"]
         evaluation_attributes["wdpa_id"] = evaluation["wdpa_id"]
-        evaluation_attributes["iso_3"] = evaluation["iso3"]
+        evaluation_attributes["iso_3"] = evaluation['countries']
         evaluation_attributes["name"] = evaluation["protected_area_name"]
         evaluation_attributes["designation"] = evaluation["designation"] || "N/A"
         evaluation_attributes["source_data_title"] = evaluation["source_data_title"]
