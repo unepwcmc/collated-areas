@@ -5,7 +5,7 @@ class PameEvaluation < ApplicationRecord
   belongs_to :pame_source
   has_and_belongs_to_many :countries
 
-  validates :methodology, :year,:metadata_id, :url, presence: true
+  validates :methodology, :year, :metadata_id, presence: true
 
   TABLE_ATTRIBUTES = [
     {
@@ -71,7 +71,7 @@ class PameEvaluation < ApplicationRecord
 
   def self.generate_query(page, filter_params)
     # if params are empty then return the paginated results without filtering
-    return PameEvaluation.where(visible: true).order('id ASC').paginate(page: page || 1, per_page: 100) if filter_params.empty?
+    return PameEvaluation.where('protected_area_id IS NOT NULL').order('id ASC').paginate(page: page || 1, per_page: 100) if filter_params.empty?
 
     filters = filter_params.select { |hash| hash["options"].present? }
 
@@ -82,63 +82,46 @@ class PameEvaluation < ApplicationRecord
   def self.parse_filters(filters)
     site_ids = []
     country_ids = []
-    where_params = {sites: "", methodology: "", year: "", iso3: ""}
-    filters.each do |filter|
-      options = filter["options"]
-      case filter['name']
-      when 'iso3'
-        countries = options
-        site_ids << countries.map{ |iso3| Country.find_by(iso_3: iso3).protected_areas.pluck(:id) }
-        where_params[:sites] = site_ids.flatten.empty? ? nil : "protected_area_id IN (#{site_ids.join(',')})"
-        country_ids << countries.map{ |iso3| "#{ Country.find_by(iso_3: iso3).id }" }
-        where_params[:iso3] = country_ids.flatten.empty? ? nil : "countries.id IN (#{country_ids.join(',')})"
-      when 'methodology'
-        options = options.map{ |e| "'#{e}'" }
-        where_params[:methodology] = options.empty? ? nil : "methodology IN (#{options.join(',')})"
-      when 'year'
-        where_params[:year] = options.empty? ? nil : "year IN (#{options.join(',')})"
+    where_params = {sites: "", methodology: "", year: ""}
+    if filters.nil?
+      {}
+    else
+      filters.each do |filter|
+        options = filter["options"]
+        case filter['name']
+        when 'iso3'
+          countries = options
+          site_ids << countries.map{ |iso3| Country.find_by(iso_3: iso3).protected_areas.pluck(:id) }
+          where_params[:sites] = site_ids.flatten.empty? ? nil : "pame_evaluations.protected_area_id IN (#{site_ids.join(',')})"
+        when 'methodology'
+          options = options.map{ |e| "'#{e}'" }
+          where_params[:methodology] = options.empty? ? nil : "pame_evaluations.methodology IN (#{options.join(',')})"
+        when 'year'
+          where_params[:year] = options.empty? ? nil : "pame_evaluations.year IN (#{options.join(',')})"
+        end
       end
+      where_params
     end
-    where_params
   end
 
   def self.run_query(page, where_params)
     if where_params[:sites].present?
-      query = PameEvaluation.connection.unprepared_statement {
-        "((#{pame_evaluations_from_pa_query(where_params)}) UNION (#{pame_evaluations_from_countries_query(where_params)})) AS pame_evaluations"
-      }
-
       PameEvaluation
-      .from(query)
-      .paginate(page: page || 1, per_page: 100).order('id ASC')
-    else
-      PameEvaluation
+      .joins(:protected_area)
+      .where('pame_evaluations.protected_area_id IS NOT NULL')
+      .where(where_params[:sites])
       .where(where_params[:methodology])
       .where(where_params[:year])
-      .paginate(page: page || 1, per_page: 100).order('id ASC')
-    end
-  end
-
-  def self.pame_evaluations_from_pa_query(where_params)
-    PameEvaluation
-    .joins(:protected_area)
-    .where(where_params[:sites])
-    .where(where_params[:methodology])
-    .where(where_params[:year])
-    .to_sql
-  end
-
-  def self.pame_evaluations_from_countries_query(where_params)
-    PameEvaluation
-    .joins(:countries)
-    .where(where_params[:iso3])
-    .where(where_params[:methodology])
-    .where(where_params[:year])
-    .to_sql
+    else
+      PameEvaluation
+      .where('pame_evaluations.protected_area_id IS NOT NULL')
+      .where(where_params[:methodology])
+      .where(where_params[:year])
+    end.paginate(page: page || 1, per_page: 100).order('id ASC')
   end
 
   def self.serialise(evaluations)
-    evaluations.select{|pe| pe.visible}.to_a.map! { |evaluation|
+    evaluations.select{|pe| pe.protected_area}.to_a.map! do |evaluation|
       
       wdpa_id = evaluation.protected_area&.wdpa_id || evaluation.wdpa_id
       name  = evaluation.protected_area&.name || evaluation.name
@@ -166,7 +149,7 @@ class PameEvaluation < ApplicationRecord
         language: evaluation.pame_source&.language,
         source_year: evaluation.pame_source&.year
       }
-    }
+    end
   end
 
   def self.sources_to_json
@@ -209,56 +192,43 @@ class PameEvaluation < ApplicationRecord
     ].to_json
   end
 
-  def self.generate_csv(where_statement, restricted_where_statement)
-    where_statement = where_statement.empty? ? '' : "WHERE #{where_statement}"
-    restricted_where_statement = restricted_where_statement.empty? ? '' : "WHERE #{restricted_where_statement}"
-    query = <<-SQL
-      SELECT e.id AS id,
-             e.metadata_id AS metadata_id,
-             e.url AS url,
-             e.year AS evaluation_year,
-             e.methodology AS methodology,
-             protected_areas.wdpa_id AS wdpa_id,
-             ARRAY_TO_STRING(ARRAY_AGG(countries.iso_3),';') AS countries,
-             protected_areas.name AS site_name,
-             designations.name AS designation,
-             pame_sources.data_title AS data_title,
-             pame_sources.resp_party AS resp_party,
-             pame_sources.year AS source_year,
-             pame_sources.language AS language
-             FROM pame_evaluations e
-             INNER JOIN protected_areas ON e.protected_area_id = protected_areas.id
-             LEFT JOIN pame_sources ON e.pame_source_id = pame_sources.id
-             INNER JOIN countries_protected_areas ON protected_areas.id = countries_protected_areas.protected_area_id
-             INNER JOIN countries ON countries_protected_areas.country_id = countries.id
-             INNER JOIN designations ON protected_areas.designation_id = designations.id
-             #{where_statement}
-             GROUP BY e.id, protected_areas.wdpa_id, protected_areas.name, designation, pame_sources.data_title,
-                      pame_sources.resp_party, pame_sources.year, pame_sources.language
+SELECT_STATEMENT = [
+    'DISTINCT pame_evaluations.id AS assessment_id', 'pame_evaluations.metadata_id AS metadata_id',
+    'pame_evaluations.url AS url', 'pame_evaluations.year AS year',
+    'pame_evaluations.methodology AS methodology', 'pame_evaluations.wdpa_id AS wdpa_id',
+    'pame_sources.data_title AS source_data_title', 'pame_sources.resp_party AS source_resp_party',
+    'pame_sources.year AS source_year', 'pame_sources.language AS source_language',
+    'pame_evaluations.protected_area_id AS protected_area_id', 'protected_areas.name AS protected_area_name',
+    'designations.name AS designation', 'ARRAY_TO_STRING(ARRAY_AGG(countries.iso_3),\';\') AS countries'
+].freeze
 
-             UNION
+GROUP_BY = "pame_evaluations.id, protected_areas.wdpa_id, protected_areas.name, designation, pame_sources.data_title,
+            pame_sources.resp_party, pame_sources.year, pame_sources.language".freeze
 
-      SELECT e.id AS id,
-             e.metadata_id AS metadata_id,
-             e.url AS url,
-             e.year AS evaluation_year,
-             e.methodology AS methodology,
-             0 AS wdpa_id,
-             ARRAY_TO_STRING(ARRAY_AGG(countries.iso_3),';') AS countries,
-             e.name AS site_name,
-             NULL AS designation,
-             pame_sources.data_title AS data_title,
-             pame_sources.resp_party AS resp_party,
-             pame_sources.year AS source_year,
-             pame_sources.language AS language
-             FROM pame_evaluations e
-             INNER JOIN pame_sources ON e.pame_source_id = pame_sources.id
-             INNER JOIN countries_pame_evaluations ON e.id = countries_pame_evaluations.pame_evaluation_id
-             INNER JOIN countries ON countries_pame_evaluations.country_id = countries.id
-             #{restricted_where_statement}
-             GROUP BY e.id, wdpa_id, e.name, designation, pame_sources.data_title,
-                      pame_sources.resp_party, pame_sources.year, pame_sources.language;
-    SQL
+  def self.generate_csv(where_params)
+    if where_params[:sites].present?
+      query = PameEvaluation
+      .where.not(protected_area_id: nil)
+      .select(SELECT_STATEMENT)
+      .left_joins(:pame_source)
+      .joins(protected_area: [:countries, :designation])
+      .where(where_params[:sites])
+      .where(where_params[:methodology])
+      .where(where_params[:year])
+      .group(GROUP_BY)
+      .to_sql
+    else
+      query = PameEvaluation
+      .where.not(protected_area_id: nil)
+      .select(SELECT_STATEMENT)
+      .left_joins(:pame_source)
+      .joins(protected_area: [:countries, :designation])
+      .where(where_params[:methodology])
+      .where(where_params[:year])
+      .group(GROUP_BY)
+      .to_sql
+    end
+
     evaluations = ActiveRecord::Base.connection.execute(query)
 
     csv_string = CSV.generate(encoding: 'UTF-8') do |csv_line|
@@ -266,7 +236,7 @@ class PameEvaluation < ApplicationRecord
       evaluation_columns = PameEvaluation.new.attributes.keys
       evaluation_columns << "evaluation_id"
 
-      excluded_attributes = ["visible", "restricted", "protected_area_id", "pame_source_id", "created_at", "updated_at", "id", "site_id", "source_id"]
+      excluded_attributes = ["assessment_is_public", "restricted", "protected_area_id", "pame_source_id", "created_at", "updated_at", "id", "site_id", "source_id"]
 
       evaluation_columns.delete_if { |k, v| excluded_attributes.include? k }
 
@@ -280,19 +250,19 @@ class PameEvaluation < ApplicationRecord
 
         evaluation_attributes.delete_if { |k, v| excluded_attributes.include? k }
 
-        evaluation_attributes["evaluation_id"] = evaluation['id']
-        evaluation_attributes["metadata_id"] = evaluation['metadata_id']
-        evaluation_attributes["url"] = evaluation['url'] || "N/A"
-        evaluation_attributes["year"] = evaluation['evaluation_year']
-        evaluation_attributes["methodology"] = evaluation['methodology']
-        evaluation_attributes["wdpa_id"] = evaluation['wdpa_id']
+        evaluation_attributes["evaluation_id"] = evaluation["assessment_id"]
+        evaluation_attributes["metadata_id"] = evaluation["metadata_id"]
+        evaluation_attributes["url"] = evaluation["url"] || "N/A"
+        evaluation_attributes["year"] = evaluation["year"]
+        evaluation_attributes["methodology"] = evaluation["methodology"]
+        evaluation_attributes["wdpa_id"] = evaluation["wdpa_id"]
         evaluation_attributes["iso_3"] = evaluation['countries']
-        evaluation_attributes["name"] = evaluation['site_name']
-        evaluation_attributes["designation"] = evaluation['designation'] || "N/A"
-        evaluation_attributes["source_data_title"] = evaluation['data_title']
-        evaluation_attributes["source_resp_party"] = evaluation['resp_party']
-        evaluation_attributes["source_year"] = evaluation['source_year']
-        evaluation_attributes["source_language"] = evaluation['language']
+        evaluation_attributes["name"] = evaluation["protected_area_name"]
+        evaluation_attributes["designation"] = evaluation["designation"] || "N/A"
+        evaluation_attributes["source_data_title"] = evaluation["source_data_title"]
+        evaluation_attributes["source_resp_party"] = evaluation["source_resp_party"]
+        evaluation_attributes["source_year"] = evaluation["source_year"]
+        evaluation_attributes["source_language"] = evaluation["source_language"]
 
         evaluation_attributes = evaluation_attributes.values.map{ |e| "#{e}" }
         csv_line << evaluation_attributes
@@ -305,21 +275,9 @@ class PameEvaluation < ApplicationRecord
     json_params = json.nil? ? nil : JSON.parse(json)
     filter_params = json_params["_json"].nil? ? nil : json_params["_json"]
 
-    where_statement = []
-    restricted_where_statement = []
     where_params = parse_filters(filter_params)
-    where_params.map do |k, v|
-      where_statement << where_fields(k,v) unless v.nil?
-      restricted_where_statement << where_fields(k,v) if !v.nil? && k != :sites
-    end
-
-    where_statement = where_statement.join(' AND ')
-    restricted_where_statement = restricted_where_statement.join(' AND ')
-    generate_csv(where_statement, restricted_where_statement)
-  end
-
-  def self.where_fields(k,v)
-    return "e.#{v}" if [:year, :sites].include? (k)
-    return v
+    generate_csv(where_params)
   end
 end
+
+
