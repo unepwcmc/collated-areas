@@ -45,7 +45,7 @@
           link = `<a href="${url}" title="View assessment" target="_blank">Link</a>`
         }
 
-        return link
+        return link || url
       },
 
       openModal () {
