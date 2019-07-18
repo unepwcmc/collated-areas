@@ -33,7 +33,6 @@ class PameEvaluationTest < ActiveSupport::TestCase
   test "hides single nil pa evaluation" do
     ps = FactoryGirl.create(:pame_source)
     pe = FactoryGirl.create(:pame_evaluation, pame_source: ps, protected_area: nil)
-    assert_nil pe.protected_area
     result = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS)
     assert_equal 0, result[:total_entries]
   end
