@@ -71,7 +71,7 @@ class PameEvaluation < ApplicationRecord
 
   def self.generate_query(page, filter_params)
     # if params are empty then return the paginated results without filtering
-    return PameEvaluation.where('protected_area_id IS NOT NULL').order('id ASC').paginate(page: page || 1, per_page: 100) if filter_params.empty?
+    return PameEvaluation.where('protected_area_id IS NOT NULL OR restricted').order('id ASC').paginate(page: page || 1, per_page: 100) if filter_params.empty?
 
     filters = filter_params.select { |hash| hash["options"].present? }
 
@@ -81,7 +81,6 @@ class PameEvaluation < ApplicationRecord
 
   def self.parse_filters(filters)
     site_ids = []
-    country_ids = []
     where_params = {sites: "", methodology: "", year: ""}
     if filters.nil?
       {}
@@ -122,7 +121,7 @@ class PameEvaluation < ApplicationRecord
 
   def self.serialise(evaluations)
     evaluations.select{|pe| pe.protected_area}.to_a.map! do |evaluation|
-      
+
       wdpa_id = evaluation.protected_area&.wdpa_id || evaluation.wdpa_id
       name  = evaluation.protected_area&.name || evaluation.name
       designation = evaluation.protected_area&.designation&.name || "N/A"

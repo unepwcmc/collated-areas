@@ -4,7 +4,7 @@ class HomeController < ApplicationController
     requested_page: 1,
     filters: []
   }.to_json
-  
+
   # Format for this date is: Month and Year (4 digits)
   UPDATED_AT = "July 2019".freeze
 
@@ -18,7 +18,8 @@ class HomeController < ApplicationController
   end
 
   def list
-    @evaluations = PameEvaluation.where('pame_evaluations.protected_area_id IS NOT NULL').paginate_evaluations(params.to_json)
+    @evaluations = PameEvaluation.paginate_evaluations(params.to_json)
+
     render json: @evaluations
   end
 
