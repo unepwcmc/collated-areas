@@ -39,13 +39,7 @@
       },
 
       assessmentUrl (url) {
-        let link = ''
-
-        if(url.includes('http')) {
-          link = `<a href="${url}" title="View assessment" target="_blank">Link</a>`
-        }
-
-        return link || url
+        return url.includes('http') ? `<a href="${url}" title="View assessment" target="_blank">Link</a>` :  url
       },
 
       openModal () {
