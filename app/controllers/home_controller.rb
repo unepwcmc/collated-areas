@@ -12,7 +12,6 @@ class HomeController < ApplicationController
     @table_attributes = PameEvaluation::TABLE_ATTRIBUTES.to_json
     @filters = PameEvaluation.filters_to_json
     @sources = PameEvaluation.sources_to_json
-    @evaluations = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS).to_json
     @json = PameEvaluation.paginate_evaluations(DEFAULT_PARAMS).to_json
     @updated_at = UPDATED_AT
   end
