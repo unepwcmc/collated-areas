@@ -1,3 +1,12 @@
+### 0.2.0
+
+**Bug fixing**
+
+* Show restricted sites correctly (no PP link on WDPA ID)
+* Do not show evaluations for non-restricted sites not in the database
+* Fix pagination
+* Fix CSV download to work with restricted sites
+
 ### 0.1.6
 
 **Add link to assessment url:**

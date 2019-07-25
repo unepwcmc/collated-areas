@@ -3,14 +3,14 @@
     <div v-if="haveResults">
       <span class="bold">{{ firstItem }} - {{ lastItem }} of {{ totalItems }}</span>
 
-      <button 
+      <button
         v-bind="{ 'disabled' : !previousIsActive }"
         @click="changePage(previousIsActive, 'previous')"
         class="button button--previous"
         :class="{ 'button--disabled' : !previousIsActive }">
       </button>
 
-      <button 
+      <button
         v-bind="{ 'disabled' : !nextIsActive }"
         @click="changePage(nextIsActive, 'next')"
         class="button button--next"
@@ -61,22 +61,22 @@
       firstItem () {
         let first
 
-        if(this.totalItems == 0) { 
+        if(this.totalItems == 0) {
           first = 0
 
         } else if (this.totalItems < this.itemsPerPage) {
           first = 1
 
         } else {
-          first = this.lastItem - this.itemsPerPage + 1
+          first = this.itemsPerPage * (this.currentPage - 1) + 1
         }
-        
+
         return first
       },
 
       lastItem () {
         let lastItem = this.itemsPerPage * this.currentPage
-        
+
         if (lastItem > this.totalItems) {
           lastItem = this.totalItems
         }
@@ -96,7 +96,7 @@
         // only change the page if the button is active
         if (isActive) {
           const newPage = direction == 'next' ? this.currentPage + 1 : this.currentPage - 1
-          
+
           this.$store.commit('updateRequestedPage', newPage)
           eventHub.$emit('getNewItems')
         }
