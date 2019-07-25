@@ -96,7 +96,7 @@ class PameEvaluation < ApplicationRecord
         options = options.map{ |e| "'#{e}'" }
         where_params[:methodology] = options.empty? ? nil : "methodology IN (#{options.join(',')})"
       when 'year'
-        where_params[:year] = options.empty? ? nil : "year IN (#{options.join(',')})"
+        where_params[:year] = options.empty? ? nil : "pame_evaluations.year IN (#{options.join(',')})"
       end
     end
     where_params
@@ -327,10 +327,11 @@ GROUP_BY = "pame_evaluations.id, protected_areas.wdpa_id, protected_areas.name, 
       restricted_where_statement << v if !v.nil? && k != :sites
     end
 
+    where_statement << '(pame_evaluations.protected_area_id IS NOT NULL OR restricted)'
     where_statement = where_statement.join(' AND ')
-    where_statement = "#{where_statement} AND (pame_evaluations.protected_area_id IS NOT NULL OR restricted)"
+
+    restricted_where_statement << '(pame_evaluations.protected_area_id IS NOT NULL OR restricted)'
     restricted_where_statement = restricted_where_statement.join(' AND ')
-    restricted_where_statement = "#{restricted_where_statement} AND (pame_evaluations.protected_area_id IS NOT NULL OR restricted)"
 
     generate_csv(where_statement, restricted_where_statement)
   end
